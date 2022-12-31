@@ -1,0 +1,55 @@
+{% extends 'form.html' %}
+{% block title %}Electro - Login{% endblock title %}
+{% block cart %}{{cartcount|length}}{% endblock cart %}
+{% block total_cart %}{{cartcount|length}}{% endblock total_cart %}
+{% block prod_cart %}
+            {%for i in cartcount%}
+            <div class="product-widget">
+                <div class="product-img">
+                    <img src="{{i.product_name.prod_image.url}}" alt="">
+                </div>
+                <div class="product-body">
+                    <h3 class="product-name"><a href="#">{{i.product_name.product_name}}</a></h3>
+                    <h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.product_name.product_price}}</h4>
+                </div>
+                <button class="delete"><i class="fa fa-close"></i></button>
+            </div>
+            {% endfor %}
+{% endblock prod_cart %}
+{% block content %}
+  <!-- SECTION -->
+  <div class="section">
+    <!-- container -->
+    <div class="container">
+      <!-- row -->
+      <div class="row" style='justify-content:center;'>
+        <div class='col-md-12' >
+          <form method='post' class='col-md-6 rounded ' style='box-shadow:1px 1px 3px black;padding:20px;' action=''>
+            <h4 class='text-center'>Login</h4>
+            {% if messages %}
+            {% for message in messages %}
+                  {% if message.tags %}
+                      <div class="alert alert-danger" role="alert">{{ message }}</div>
+                  {% else %}
+                      <div class="alert alert-success" role="alert">{{ message }}</div>
+                  {% endif %}
+            {% endfor %}
+            {% endif %}
+            <div class='form-group'>
+              {{ form.cust_email}}
+            </div>
+            {% csrf_token %}
+            <div class='form-group'>
+              {{ form.cust_password}}
+            </div>
+            <button class='btn primary-btn'>Login</button>
+          </form>
+        </div>
+      </div>
+      <!-- /row -->
+    </div>
+    <!-- /container -->
+  </div>
+  <!-- /SECTION -->
+
+{% endblock content %}
