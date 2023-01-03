@@ -110,6 +110,7 @@
 										</a>
 										<div class="cart-dropdown">
 											<div class="cart-list">
+												{% if cartcount %}
 												{%for i in cartcount%}
 												<div class="product-widget">
 													<div class="product-img">
@@ -122,6 +123,15 @@
 													<button class="delete"><i class="fa fa-close"></i></button>
 												</div>
 												{% endfor %}
+												{% else %}
+												<div class="product-widget">
+													<div class="product-body">
+															No item in the Cart
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
+												</div>
+												{% endif %}
+												
 											</div>
 											<div class="cart-summary">
 												<small>{{cartcount|length}} Item(s) selected</small>
@@ -173,6 +183,7 @@
 							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 							<li><a href="#">Hot Deals</a></li>
 							<li><a href="{% url 'store'%}">Categories</a></li>
+							<li><a href="#">View Your Orders</a></li>
 						{%endif%}
 					</ul>
 					<!-- /NAV -->
@@ -397,51 +408,95 @@
 							</ul>
 						</div>
 						<!-- /store top filter -->
-
 						<!-- store products -->
 						<div class="row">
 							{% for records in all_products  %}
 								<!-- product -->
-							<div class="col-md-4 col-xs-6">
-								<div class="product">
-									<div class="product-img">
-										<img src="{{ records.prod_image.url }}" alt="">
-										<div class="product-label">
-											<span class="sale">-30%</span>
-											<span class="new">NEW</span>
+								{% if records in cartlist %}
+								<div class="col-md-4 col-xs-6">
+									<div class="product">
+										<div class="product-img">
+											<img src="{{ records.prod_image.url }}" alt="">
+											<div class="product-label">
+												<span class="sale">-30%</span>
+												<span class="new">NEW</span>
+											</div>
 										</div>
-									</div>
-									<div class="product-body">
-										<p class="product-category">{{records.category}}</p>
-										<h3 class="product-name"><a href="#">{{records.product_name}}</a></h3>
-										<h4 class="product-price">${{records.product_price}}<del class="product-old-price">${{records.product_price}}</del></h4>
-										<div class="product-rating">
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
+										<div class="product-body">
+											<p class="product-category">{{records.category}}</p>
+											<h3 class="product-name"><a href="#">{{records.product_name}}</a></h3>
+											<h4 class="product-price">${{records.product_price}}<del class="product-old-price">${{records.product_price}}</del></h4>
+											<div class="product-rating">
+												<i class="fa fa-star"></i>
+												<i class="fa fa-star"></i>
+												<i class="fa fa-star"></i>
+												<i class="fa fa-star"></i>
+												<i class="fa fa-star"></i>
+											</div>
+											<div class="product-btns">
+												<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
+												<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
+												<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
+											</div>
 										</div>
-										<div class="product-btns">
-											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
+										<div class="add-to-cart">
+											<form method='post' action='{% url "remove-cart" %}' id='remove-form'>												
+												<input type="hidden" name="prod_id" id="" value='{{ records.id }}' >
+												{% csrf_token %}
+												{% if session != None %}
+												
+												<button class="add-to-cart-btn" type='button' ><i class="fa fa-shopping-cart"></i>Remove from Cart </button>
+												{% else %}
+												<a class="add-to-cart-btn primary-btn" href='{% url "login" %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
+												{% endif %}
+											</form>
 										</div>
-									</div>
-									<div class="add-to-cart">
-										<form method='post' action='' id='myform'>												
-											<input type="hidden" name="prod_id" id="" value='{{ records.id }}' >
-											{% csrf_token %}
-											{% if session != None %}
-											<button class="add-to-cart-btn" ><i class="fa fa-shopping-cart"></i> add to cart</button>
-											{% else %}
-											<a class="add-to-cart-btn primary-btn" href='{% url 'login' %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
-											{% endif %}
-										</form>
 									</div>
 								</div>
-							</div>
-							<!-- /product -->
+								<!-- /product -->
+								{% else %}
+								<div class="col-md-4 col-xs-6">
+									<div class="product">
+										<div class="product-img">
+											<img src="{{ records.prod_image.url }}" alt="">
+											<div class="product-label">
+												<span class="sale">-30%</span>
+												<span class="new">NEW</span>
+											</div>
+										</div>
+										<div class="product-body">
+											<p class="product-category">{{records.category}}</p>
+											<h3 class="product-name"><a href="#">{{records.product_name}}</a></h3>
+											<h4 class="product-price">${{records.product_price}}<del class="product-old-price">${{records.product_price}}</del></h4>
+											<div class="product-rating">
+												<i class="fa fa-star"></i>
+												<i class="fa fa-star"></i>
+												<i class="fa fa-star"></i>
+												<i class="fa fa-star"></i>
+												<i class="fa fa-star"></i>
+											</div>
+											<div class="product-btns">
+												<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
+												<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
+												<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
+											</div>
+										</div>
+										<div class="add-to-cart">
+											<form method='post' action='' id='myform'>												
+												<input type="hidden" name="prod_id" id="" value='{{ records.id }}' >
+												{% csrf_token %}
+												{% if session != None %}
+												<button class="add-to-cart-btn" ><i class="fa fa-shopping-cart"></i> add to cart </button>
+												{% else %}
+												<a class="add-to-cart-btn primary-btn" href='{% url "login" %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
+												{% endif %}
+											</form>
+										</div>
+									</div>
+								</div>
+								<!-- /product -->
+								{% endif %}
+							
 							
 							{% endfor %}
 							
@@ -574,18 +629,34 @@
 		<script src="{% static 'ecomtech/js/main.js' %}"></script>
 		<script>
 			$(document).ready(function(){
-				$('#cart-btn').click(function(){
-					var data=$('#myform').serialize()
-					$.ajax({
-						url:"{% url 'store' %}",
-						data:data,
-						type:'post',
-						dataType:'text',
-						success:function(response){
-								$('#cart-btn').val('Item Added')
-						}
-				})
-				})
+				if($('form').attr('id')=='remove-form'){
+					$('#cart-btn').click(function(){
+						var data=$('#form').serialize()
+						$.ajax({
+							url:"{% url 'store' %}",
+							data:data,
+							type:'post',
+							dataType:'text',
+							success:function(response){
+									pass
+							}
+						})
+					})
+				}else{
+					$('#cart-btn').click(function(){
+						var data=$('#myform').serialize()
+						$.ajax({
+							url:"{% url 'store' %}",
+							data:data,
+							type:'post',
+							dataType:'text',
+							success:function(response){
+									pass
+							}
+						})
+					})
+				}
+				
 			})
 		</script>
 	</body>

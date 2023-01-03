@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
     'ecomtech',
     'django.contrib.admin',
     'django.contrib.auth',

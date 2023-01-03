@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponseRedirect
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 from django.contrib import messages
 from django.urls import reverse
 from .models import Product,Transaction,Newsletter,Cart,Customer
@@ -13,8 +13,8 @@ def index(request):
   else:
     m=Newsletter(email=request.POST['newsletter_email'])
     m.save()
-    response={'response':'You have Subscribed Successfully'}
-    return JsonResponse(response)
+    response='You have Subscribed Successfully'
+    return HttpResponseRedirect(reverse('home'))
 def checkout(request):
   cartcount=Cart.objects.filter(cust_id=request.session.get('loggedin'))
   return render(request,'ecomtech/checkout.html',{'session':request.session.get('loggedin'),'cartcount':cartcount})
@@ -57,12 +57,20 @@ def cart(request):
     return render(request,'ecomtech/cart.html',{'session':request.session.get('loggedin'),'cart':cart})
   else :
     pass
+def remove_cart(request):
+  if request.method == 'GET':
+    return HttpResponseRedirect(reverse('store'))
+  else :
+    return HttpResponseRedirect(reverse('store'))
 def store(request):
     cartcount=Cart.objects.filter(cust_id=request.session.get('loggedin'))
     if request.method=='GET':
       all_products=Product.objects.all()
       products_widget=Product.objects.all()[:3]
-      return render(request,'ecomtech/store.html',{'all_products':all_products,'products_widget':products_widget,'session':request.session.get('loggedin'),'cartcount':cartcount})
+      cartlist=[]
+      for i in cartcount:
+        cartlist.append(i)
+      return render(request,'ecomtech/store.html',{'all_products':all_products,'products_widget':products_widget,'session':request.session.get('loggedin'),'cartcount':cartcount,'cartlist':cartlist})
     else:
       if request.session.get('loggedin'):
         prod_id=request.POST.get('prod_id')
@@ -70,7 +78,7 @@ def store(request):
         prod=Product.objects.get(pk=prod_id)
         m=Cart(cust_id=cust,product_name=prod)
         m.save()
-        response={'response':'Done'}
-        return JsonResponse(response)
+        response='Done'
+        return  HttpResponseRedirect(reverse('store'))
       else:
         return HttpResponseRedirect(reverse('login'))
