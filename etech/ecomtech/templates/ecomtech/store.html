@@ -184,6 +184,7 @@
 							<li><a href="#">Hot Deals</a></li>
 							<li><a href="{% url 'store'%}">Categories</a></li>
 							<li><a href="#">View Your Orders</a></li>
+							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
 						{%endif%}
 					</ul>
 					<!-- /NAV -->
@@ -412,7 +413,6 @@
 						<div class="row">
 							{% for records in all_products  %}
 								<!-- product -->
-								{% if records in cartlist %}
 								<div class="col-md-4 col-xs-6">
 									<div class="product">
 										<div class="product-img">
@@ -440,62 +440,21 @@
 											</div>
 										</div>
 										<div class="add-to-cart">
-											<form method='post' action='{% url "remove-cart" %}' id='remove-form'>												
+											<form method='post' action='{% url 'add-cart' %}' id='myform'>												
 												<input type="hidden" name="prod_id" id="" value='{{ records.id }}' >
 												{% csrf_token %}
 												{% if session != None %}
-												
-												<button class="add-to-cart-btn" type='button' ><i class="fa fa-shopping-cart"></i>Remove from Cart </button>
+												<button class="add-to-cart-btn" id="cart-btn"><i class="fa fa-shopping-cart"></i> add to cart </button>
 												{% else %}
 												<a class="add-to-cart-btn primary-btn" href='{% url "login" %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
 												{% endif %}
 											</form>
+											
 										</div>
 									</div>
 								</div>
 								<!-- /product -->
-								{% else %}
-								<div class="col-md-4 col-xs-6">
-									<div class="product">
-										<div class="product-img">
-											<img src="{{ records.prod_image.url }}" alt="">
-											<div class="product-label">
-												<span class="sale">-30%</span>
-												<span class="new">NEW</span>
-											</div>
-										</div>
-										<div class="product-body">
-											<p class="product-category">{{records.category}}</p>
-											<h3 class="product-name"><a href="#">{{records.product_name}}</a></h3>
-											<h4 class="product-price">${{records.product_price}}<del class="product-old-price">${{records.product_price}}</del></h4>
-											<div class="product-rating">
-												<i class="fa fa-star"></i>
-												<i class="fa fa-star"></i>
-												<i class="fa fa-star"></i>
-												<i class="fa fa-star"></i>
-												<i class="fa fa-star"></i>
-											</div>
-											<div class="product-btns">
-												<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-												<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-												<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-											</div>
-										</div>
-										<div class="add-to-cart">
-											<form method='post' action='' id='myform'>												
-												<input type="hidden" name="prod_id" id="" value='{{ records.id }}' >
-												{% csrf_token %}
-												{% if session != None %}
-												<button class="add-to-cart-btn" ><i class="fa fa-shopping-cart"></i> add to cart </button>
-												{% else %}
-												<a class="add-to-cart-btn primary-btn" href='{% url "login" %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
-												{% endif %}
-											</form>
-										</div>
-									</div>
-								</div>
-								<!-- /product -->
-								{% endif %}
+
 							
 							
 							{% endfor %}
@@ -629,35 +588,21 @@
 		<script src="{% static 'ecomtech/js/main.js' %}"></script>
 		<script>
 			$(document).ready(function(){
-				if($('form').attr('id')=='remove-form'){
-					$('#cart-btn').click(function(){
-						var data=$('#form').serialize()
-						$.ajax({
-							url:"{% url 'store' %}",
-							data:data,
-							type:'post',
-							dataType:'text',
-							success:function(response){
-									pass
-							}
-						})
-					})
-				}else{
+				
 					$('#cart-btn').click(function(){
 						var data=$('#myform').serialize()
 						$.ajax({
-							url:"{% url 'store' %}",
+							url:"{% url 'add-cart' %}",
 							data:data,
 							type:'post',
-							dataType:'text',
+							dataType:'json',
 							success:function(response){
-									pass
+								alert(response.success)
 							}
 						})
 					})
-				}
+				})
 				
-			})
 		</script>
 	</body>
 </html>
