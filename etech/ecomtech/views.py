@@ -49,13 +49,16 @@ def login(request):
     else:
       messages.add_message(request,messages.ERROR,'Wrong Credentials')
       return HttpResponseRedirect(reverse('login'))
-def products(request):
+def products(request,slug):
   cartcount=Cart.objects.filter(cust_id=request.session.get('loggedin'))
-  return render(request,'ecomtech/product.html',{'session':request.session.get('loggedin'),'cartcount':cartcount})
+  if request.method== 'GET':
+    single_prod=Product.objects.get(slug=slug)
+    all_products=Product.objects.all()[:2]
+    next_products=Product.objects.all()[2:2]
+    return render(request,'ecomtech/product.html',{'session':request.session.get('loggedin'),'cartcount':cartcount,'all_products':all_products,'next_products':next_products,'single_prod':single_prod})
 def cart(request):
   if request.method == 'GET':
     cart=Cart.objects.filter(cust_id=request.session.get('loggedin'))
-
     return render(request,'ecomtech/cart.html',{'session':request.session.get('loggedin'),'cart':cart})
   else :
     pass

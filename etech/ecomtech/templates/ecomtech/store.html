@@ -372,7 +372,7 @@
 								</div>
 								<div class="product-body">
 									<p class="product-category">{{i.category}}</p>
-									<h3 class="product-name"><a href="#">{{i.product_name}}</a></h3>
+									<h3 class="product-name"><a href="{% url 'product-page' slug=i.slug %}">{{i.product_name}}</a></h3>
 									<h4 class="product-price">${{i.product_price}}<del class="product-old-price">${{i.product_price}}</del></h4>
 								</div>
 							</div>
@@ -424,7 +424,7 @@
 										</div>
 										<div class="product-body">
 											<p class="product-category">{{records.category}}</p>
-											<h3 class="product-name"><a href="#">{{records.product_name}}</a></h3>
+											<h3 class="product-name"><a href="{% url 'product-page' slug=records.slug %}">{{records.product_name}}</a></h3>
 											<h4 class="product-price">${{records.product_price}}<del class="product-old-price">${{records.product_price}}</del></h4>
 											<div class="product-rating">
 												<i class="fa fa-star"></i>
@@ -440,7 +440,7 @@
 											</div>
 										</div>
 										<div class="add-to-cart">
-											<form method='post' action='{% url 'add-cart' %}' id='myform'>												
+											<form method='post' action='{% url 'add-cart' %}' class='myform'>												
 												<input type="hidden" name="prod_id" id="" value='{{ records.id }}' >
 												{% csrf_token %}
 												{% if session != None %}
@@ -590,7 +590,7 @@
 			$(document).ready(function(){
 				
 					$('#cart-btn').click(function(){
-						var data=$('#myform').serialize()
+						var data=$('.myform').serialize()
 						$.ajax({
 							url:"{% url 'add-cart' %}",
 							data:data,

@@ -280,7 +280,7 @@
 										</div>
 										<div class="product-body">
 											<p class="product-category">{{records.category}}</p>
-											<h3 class="product-name"><a href="#">{{records.product_name}}</a></h3>
+											<h3 class="product-name"><a href="{% url 'product-page' slug=records.slug %}">{{records.product_name}}</a></h3>
 											<h4 class="product-price">${{records.product_price}}<del class="product-old-price">${{records.product_price}}</del></h4>
 											<div class="product-rating">
 												<i class="fa fa-star"></i>
@@ -418,7 +418,7 @@
 												</div>
 												<div class="product-body">
 													<p class="product-category">{{records.category}}</p>
-													<h3 class="product-name"><a href="#">{{records.product_name}}</a></h3>
+													<h3 class="product-name"><a href="{% url 'product-page' slug=records.slug %}">{{records.product_name}}</a></h3>
 													<h4 class="product-price">${{records.product_price}}<del class="product-old-price">${{records.product_price}}</del></h4>
 													<div class="product-rating">
 														<i class="fa fa-star"></i>
@@ -531,7 +531,7 @@
 									</div>
 									<div class="product-body">
 										<p class="product-category">{{i.category}}</p>
-										<h3 class="product-name"><a href="#">{{i.product_name}}</a></h3>
+										<h3 class="product-name"><a href="{% url 'product-page' slug=i.slug %}">{{i.product_name}}</a></h3>
 										<h4 class="product-price">${{i.product_price}}<del class="product-old-price">${{i.product_price}}</del></h4>
 									</div>
 								</div>
@@ -548,7 +548,7 @@
 									</div>
 									<div class="product-body">
 										<p class="product-category">{{ y.category }}</p>
-										<h3 class="product-name"><a href="#">{{y.product_name}}</a></h3>
+										<h3 class="product-name"><a href="{% url 'product-page' slug=y.slug %}">{{y.product_name}}</a></h3>
 										<h4 class="product-price">${{y.product_price}}<del class="product-old-price">${{y.product_price}}</del></h4>
 									</div>
 								</div>
@@ -571,15 +571,15 @@
 						<div class="products-widget-slick" data-nav="#slick-nav-5">
 							<div>
 								<!-- product widget -->
-								{%for i in products_widget%}
+								{%for a in products_widget%}
 								<div class="product-widget">
 									<div class="product-img">
-										<img src="{{ i.prod_image.url }}" alt="">
+										<img src="{{ a.prod_image.url }}" alt="">
 									</div>
 									<div class="product-body">
-										<p class="product-category">{{i.category}}</p>
-										<h3 class="product-name"><a href="#">{{i.product_name}}</a></h3>
-										<h4 class="product-price">${{i.product_price}}<del class="product-old-price">${{i.product_price}}</del></h4>
+										<p class="product-category">{{a.category}}</p>
+										<h3 class="product-name"><a href="{% url 'product-page' slug=a.slug %}">{{a.product_name}}</a></h3>
+										<h4 class="product-price">${{a.product_price}}<del class="product-old-price">${{a.product_price}}</del></h4>
 									</div>
 								</div>
 								<!-- /product widget -->
@@ -588,15 +588,15 @@
 								
 							</div>
 							<div>
-								{%for y in second_widget%}
+								{%for b in second_widget%}
 								<div class="product-widget">
 									<div class="product-img">
-										<img src="{{ y.prod_image.url }}" alt="">
+										<img src="{{ b.prod_image.url }}" alt="">
 									</div>
 									<div class="product-body">
-										<p class="product-category">{{ y.category }}</p>
-										<h3 class="product-name"><a href="#">{{y.product_name}}</a></h3>
-										<h4 class="product-price">${{y.product_price}}<del class="product-old-price">${{y.product_price}}</del></h4>
+										<p class="product-category">{{ b.category }}</p>
+										<h3 class="product-name"><a href="{% url 'product-page' slug=b.slug %}">{{b.product_name}}</a></h3>
+										<h4 class="product-price">${{b.product_price}}<del class="product-old-price">${{b.product_price}}</del></h4>
 									</div>
 								</div>
 								<!-- /product widget -->

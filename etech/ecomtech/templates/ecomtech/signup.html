@@ -8,7 +8,7 @@
                     <img src="{{i.product_name.prod_image.url}}" alt="">
                 </div>
                 <div class="product-body">
-                    <h3 class="product-name"><a href="#">{{i.product_name.product_name}}</a></h3>
+                  <h3 class="product-name"><a href="{% url 'product-page' slug=records.slug %}">{{records.product_name}}</a></h3>
                     <h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.product_name.product_price}}</h4>
                 </div>
                 <button class="delete"><i class="fa fa-close"></i></button>
