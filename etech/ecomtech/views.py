@@ -1,5 +1,7 @@
 from django.shortcuts import render,HttpResponseRedirect
-from django.http import JsonResponse,HttpResponse
+from django.http import JsonResponse
+from django.contrib.auth.hashers import make_password,check_password
+from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.urls import reverse
 from .models import Product,Transaction,Newsletter,Cart,Customer
@@ -31,24 +33,22 @@ def signup(request):
     fname=request.POST.get('cust_fname')
     lname=request.POST.get('cust_lname')
     phone=request.POST.get('cust_phone')
-    x=Customer(cust_email=email,cust_password=password,cust_fname=fname,cust_lname=lname,cust_phone=phone)
+    x=Customer(cust_email=email,cust_password=make_password(password),cust_fname=fname,cust_lname=lname,cust_phone=phone)
     x.save()
     return HttpResponseRedirect(reverse('login'))
-def login(request):
+def LoginView(request):
   form=LoginForm()
   cartcount=Cart.objects.filter(cust_id=request.session.get('loggedin'))
-  if request.method=='GET':
-    return render(request,'ecomtech/login.html',{'form':form,'cartcount':cartcount})
-  else:
-    email=request.POST.get('cust_email')
-    password=request.POST.get('cust_password')
-    cust=Customer.objects.filter(cust_email=email, cust_password=password).first()
-    if cust:
-      request.session['loggedin']= cust.id
-      return HttpResponseRedirect(reverse('store'))
-    else:
-      messages.add_message(request,messages.ERROR,'Wrong Credentials')
-      return HttpResponseRedirect(reverse('login'))
+  if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            return render(request, 'ecomtech/login.html', {'error': 'Invalid Login Credentials'})
+    return render(request, 'login.html')
 def products(request,slug):
   cartcount=Cart.objects.filter(cust_id=request.session.get('loggedin'))
   if request.method== 'GET':
