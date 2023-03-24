@@ -14,7 +14,7 @@
  
 		 <!-- Bootstrap -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/bootstrap.min.css'%}"/>
- 
+		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/sass/_shoping-cart.scss'%}"/>
 		 <!-- Slick -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick.css'%}"/>
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick-theme.css'%}"/>
@@ -50,7 +50,7 @@
 					</ul>
 					<ul class="header-links pull-right">
 						<li><a href="#"><i class="fa fa-dollar"></i> USD</a></li>
-						<li><a href="#"><i class="fa fa-user-o"></i> My Account</a></li>
+						<li><a href="{% url 'profile' %}"><i class="fa fa-user-o"></i> {{request.user}}</a></li>
 					</ul>
 				</div>
 			</div>
@@ -114,11 +114,11 @@
 												{%for i in cartcount%}
 												<div class="product-widget">
 													<div class="product-img">
-														<img src="{{i.product_name.prod_image.url}}" alt="">
+														<img src="{{i.products.prod_image.url}}" alt="">
 													</div>
 													<div class="product-body">
-														<h3 class="product-name"><a href="#">{{i.product_name.product_name}}</a></h3>
-														<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.product_name.product_price}}</h4>
+														<h3 class="product-name"><a href="#">{{i.products.product_name}}</a></h3>
+														<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.products.product_price}}</h4>
 													</div>
 													<button class="delete"><i class="fa fa-close"></i></button>
 												</div>
@@ -173,18 +173,19 @@
 				<div id="responsive-nav">
 					<!-- NAV -->
 					<ul class="main-nav nav navbar-nav">
-						{% if session == None%}
+						{% if request.user.is_authenticated%}
 						<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 						<li><a href="#">Hot Deals</a></li>
 						<li><a href="{% url 'store'%}">Categories</a></li>
-						<li><a href="{% url 'login'%}" >Login</a></li>
-						<li><a href="{% url 'signup'%}">Sign Up</a></li>
+						<li><a href="#">View Your Orders</a></li>
+							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
 						{% else %}
 							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 							<li><a href="#">Hot Deals</a></li>
 							<li><a href="{% url 'store'%}">Categories</a></li>
-							<li><a href="#">View Your Orders</a></li>
-							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
+							
+							<li><a href="{% url 'login'%}" >Login</a></li>
+						<li><a href="{% url 'signup'%}">Sign Up</a></li>
 						{%endif%}
 					</ul>
 					<!-- /NAV -->
@@ -237,7 +238,6 @@
 										<small>(120)</small>
 									</label>
 								</div>
-
 								<div class="input-checkbox">
 									<input type="checkbox" id="category-2">
 									<label for="category-2">
@@ -273,7 +273,6 @@
 										<small>(120)</small>
 									</label>
 								</div>
-
 								<div class="input-checkbox">
 									<input type="checkbox" id="category-6">
 									<label for="category-6">
@@ -440,17 +439,23 @@
 											</div>
 										</div>
 										<div class="add-to-cart">
-											<form method='post' action='{% url 'add-cart' %}' class='myform'>												
-												<input type="hidden" name="prod_id" id="" value='{{ records.id }}' >
+											<form method='post' action='{% url 'add-cart' product_id=records.id %}' class='myform'>												
 												{% csrf_token %}
-												{% if session != None %}
-												<button class="add-to-cart-btn" id="cart-btn"><i class="fa fa-shopping-cart"></i> add to cart </button>
+												{% if request.user != None %}
+												{% if records.prod_cart != '' %}
+												<button class="add-to-cart-btn" id="cart-btn"><i class="fa fa-check" aria-hidden="true"></i>Added {{records.prod_cart}}</button>
+												{% else %}
+												<button class="add-to-cart-btn" id="cart-btn"><i class="fa fa-shopping-cart" aria-hidden="true"></i> add to cart</button>
+												{% endif %}
+												
 												{% else %}
 												<a class="add-to-cart-btn primary-btn" href='{% url "login" %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
 												{% endif %}
 											</form>
 											
 										</div>
+										
+										
 									</div>
 								</div>
 								<!-- /product -->
@@ -586,23 +591,5 @@
 		<script src="{% static 'ecomtech/js/nouislider.min.js' %}"></script>
 		<script src="{% static 'ecomtech/js/jquery.zoom.min.js' %}"></script>
 		<script src="{% static 'ecomtech/js/main.js' %}"></script>
-		<script>
-			$(document).ready(function(){
-				
-					$('#cart-btn').click(function(){
-						var data=$('.myform').serialize()
-						$.ajax({
-							url:"{% url 'add-cart' %}",
-							data:data,
-							type:'post',
-							dataType:'json',
-							success:function(response){
-								alert(response.success)
-							}
-						})
-					})
-				})
-				
-		</script>
 	</body>
 </html>

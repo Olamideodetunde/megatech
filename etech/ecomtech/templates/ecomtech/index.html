@@ -7,7 +7,7 @@
 		 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 		 {% load static%}
 		 <title>Electro- Home</title>
- 
+		
 		 <!-- Google font -->
 		 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
  
@@ -43,12 +43,12 @@
 				<div class="container">
 					<ul class="header-links pull-left">
 						<li><a href="#"><i class="fa fa-phone"></i> +021-95-51-84</a></li>
-						<li><a href="#"><i class="fa fa-envelope-o"></i> email@email.com</a></li>
+						<li><a href="#"><i class="fa fa-envelope-o"></i> {{request.user}}</a></li>
 						<li><a href="#"><i class="fa fa-map-marker"></i> 1734 Stonecoal Road</a></li>
 					</ul>
 					<ul class="header-links pull-right">
 						<li><a href="#"><i class="fa fa-dollar"></i> USD</a></li>
-						<li><a href="#"><i class="fa fa-user-o"></i> My Account</a></li>
+						<li><a href="{% url 'profile' %}"><i class="fa fa-user-o"></i> {{request.user}}</a></li>
 					</ul>
 				</div>
 			</div>
@@ -108,18 +108,27 @@
 									</a>
 									<div class="cart-dropdown">
 										<div class="cart-list">
-											{%for i in cartcount%}
-											<div class="product-widget">
-												<div class="product-img">
-													<img src="{{i.product_name.prod_image.url}}" alt="">
+											{% if cartcount %}
+												{%for i in cartcount%}
+												<div class="product-widget">
+													<div class="product-img">
+														<img src="{{i.products.prod_image.url}}" alt="">
+													</div>
+													<div class="product-body">
+														<h3 class="product-name"><a href="#">{{i.products.product_name}}</a></h3>
+														<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.products.product_price}}</h4>
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
 												</div>
-												<div class="product-body">
-													<h3 class="product-name"><a href="#">{{i.product_name.product_name}}</a></h3>
-													<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.product_name.product_price}}</h4>
+												{% endfor %}
+												{% else %}
+												<div class="product-widget">
+													<div class="product-body">
+															No item in the Cart
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
 												</div>
-												<button class="delete"><i class="fa fa-close"></i></button>
-											</div>
-											{% endfor %}
+												{% endif %}
 										</div>
 										<div class="cart-summary">
 											<small>{{cartcount|length}} Item(s) selected</small>
@@ -161,18 +170,19 @@
 				<div id="responsive-nav">
 					<!-- NAV -->
 					<ul class="main-nav nav navbar-nav">
-						{% if session == None%}
+						{% if request.user.is_authenticated%}
 						<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 						<li><a href="#">Hot Deals</a></li>
 						<li><a href="{% url 'store'%}">Categories</a></li>
-						<li><a href="{% url 'login'%}" >Login</a></li>
-						<li><a href="{% url 'signup'%}">Sign Up</a></li>
+						<li><a href="#">View Your Orders</a></li>
+							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
 						{% else %}
 							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 							<li><a href="#">Hot Deals</a></li>
 							<li><a href="{% url 'store'%}">Categories</a></li>
-							<li><a href="#">View Your Orders</a></li>
-							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
+							
+							<li><a href="{% url 'login'%}" >Login</a></li>
+						<li><a href="{% url 'signup'%}">Sign Up</a></li>
 						{%endif%}
 					</ul>
 					<!-- /NAV -->
@@ -296,11 +306,10 @@
 											</div>
 										</div>
 										<div class="add-to-cart">
-											<form method='post' action='{% url "add-cart" %}' id='my-form'>												
-												<input type="hidden" name="prod_id" id="" value='{{ records.id }}' >
+											<form method='post' action='{% url 'add-cart' product_id=records.id %}' class='myform'>												
 												{% csrf_token %}
-												{% if session != None %}
-												<button class="add-to-cart-btn" class="cart-btn" ><i class="fa fa-shopping-cart"></i> add to cart </button>
+												{% if request.user != None %}
+												<button class="add-to-cart-btn" id="cart-btn"><i class="fa fa-shopping-cart"></i> add to cart </button>
 												{% else %}
 												<a class="add-to-cart-btn primary-btn" href='{% url "login" %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
 												{% endif %}
@@ -434,15 +443,15 @@
 													</div>
 												</div>
 												<div class="add-to-cart">
-													<form method='post' action='{% url "add-cart" %}' id='my-form'>												
-														<input type="hidden" name="prod_id" id="" value='{{ records.id }}' >
+													<form method='post' action='{% url 'add-cart' product_id=records.id %}' class='myform'>												
 														{% csrf_token %}
-														{% if session != None %}
-														<button class="add-to-cart-btn" class="cart-btn" ><i class="fa fa-shopping-cart"></i> add to cart </button>
+														{% if request.user != None %}
+														<button class="add-to-cart-btn" id="cart-btn"><i class="fa fa-shopping-cart"></i> add to cart </button>
 														{% else %}
 														<a class="add-to-cart-btn primary-btn" href='{% url "login" %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
 														{% endif %}
 													</form>
+													
 												</div>
 											</div>
 										<!-- /product -->
@@ -524,15 +533,15 @@
 						<div class="products-widget-slick" data-nav="#slick-nav-4">
 							<div>
 								<!-- product widget -->
-								{%for i in products_widget%}
+								{%for x in products_widget%}
 								<div class="product-widget">
 									<div class="product-img">
-										<img src="{{ i.prod_image.url }}" alt="">
+										<img src="{{ x.prod_image.url }}" alt="">
 									</div>
 									<div class="product-body">
-										<p class="product-category">{{i.category}}</p>
-										<h3 class="product-name"><a href="{% url 'product-page' slug=i.slug %}">{{i.product_name}}</a></h3>
-										<h4 class="product-price">${{i.product_price}}<del class="product-old-price">${{i.product_price}}</del></h4>
+										<p class="product-category">{{x.category}}</p>
+										<h3 class="product-name"><a href="{% url 'product-page' slug=x.slug %}">{{x.product_name}}</a></h3>
+										<h4 class="product-price">${{x.product_price}}<del class="product-old-price">${{x.product_price}}</del></h4>
 									</div>
 								</div>
 								<!-- /product widget -->
@@ -770,19 +779,6 @@
 						}
 				})
 				})
-				$('#cart-btn').click(function(){
-						var data=$('#my-form').serialize()
-						$.ajax({
-							url:"{% url 'add-cart' %}",
-							data:data,
-							type:'post',
-							dataType:'json',
-							success:function(response){
-								alert(response.success)
-							}
-						})
-					})
-
 			})
 		</script>
 	</body>

@@ -14,7 +14,7 @@
  
 		 <!-- Bootstrap -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/bootstrap.min.css'%}"/>
- 
+		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/sass/_shoping-cart.scss'%}"/>
 		 <!-- Slick -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick.css'%}"/>
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick-theme.css'%}"/>
@@ -50,7 +50,7 @@
 					</ul>
 					<ul class="header-links pull-right">
 						<li><a href="#"><i class="fa fa-dollar"></i> USD</a></li>
-						<li><a href="#"><i class="fa fa-user-o"></i> My Account</a></li>
+						<li><a href="{% url 'profile' %}"><i class="fa fa-user-o"></i> {{request.user}}</a></li>
 					</ul>
 				</div>
 			</div>
@@ -152,18 +152,19 @@
 				<div id="responsive-nav">
 					<!-- NAV -->
 					<ul class="main-nav nav navbar-nav">
-						{% if session == None%}
-							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
-							<li><a href="#">Hot Deals</a></li>
-							<li><a href="{% url 'store'%}">Categories</a></li>
-							<li><a href="{% url 'login'%}" >Login</a></li>
-							<li><a href="{% url 'signup'%}">Sign Up</a></li>
+						{% if request.user.is_authenticated%}
+						<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
+						<li><a href="#">Hot Deals</a></li>
+						<li><a href="{% url 'store'%}">Categories</a></li>
+						<li><a href="#">View Your Orders</a></li>
+							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
 						{% else %}
 							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 							<li><a href="#">Hot Deals</a></li>
 							<li><a href="{% url 'store'%}">Categories</a></li>
-							<li><a href="#">View Your Orders</a></li>
-							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
+							
+							<li><a href="{% url 'login'%}" >Login</a></li>
+						<li><a href="{% url 'signup'%}">Sign Up</a></li>
 						{%endif%}
 					</ul>
 					<!-- /NAV -->

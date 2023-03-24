@@ -11,7 +11,7 @@
  
 		 <!-- Google font -->
 		 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
- 
+		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/sass/_shoping-cart.scss'%}"/>
 		 <!-- Bootstrap -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/bootstrap.min.css'%}"/>
  
@@ -51,7 +51,7 @@
 					</ul>
 					<ul class="header-links pull-right">
 						<li><a href="#"><i class="fa fa-dollar"></i> USD</a></li>
-						<li><a href="#"><i class="fa fa-user-o"></i> My Account</a></li>
+						<li><a href="{% url 'profile' %}"><i class="fa fa-user-o"></i> {{request.user}}</a></li>
 					</ul>
 				</div>
 			</div>
@@ -111,18 +111,27 @@
 									</a>
 									<div class="cart-dropdown">
 										<div class="cart-list">
-											{%for i in cartcount%}
-											<div class="product-widget">
-												<div class="product-img">
-													<img src="{{i.product_name.prod_image.url}}" alt="">
+											{% if cartcount %}
+												{%for i in cartcount%}
+												<div class="product-widget">
+													<div class="product-img">
+														<img src="{{i.products.prod_image.url}}" alt="">
+													</div>
+													<div class="product-body">
+														<h3 class="product-name"><a href="#">{{i.products.product_name}}</a></h3>
+														<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.products.product_price}}</h4>
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
 												</div>
-												<div class="product-body">
-													<h3 class="product-name"><a href="#">{{i.product_name.product_name}}</a></h3>
-													<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.product_name.product_price}}</h4>
+												{% endfor %}
+												{% else %}
+												<div class="product-widget">
+													<div class="product-body">
+															No item in the Cart
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
 												</div>
-												<button class="delete"><i class="fa fa-close"></i></button>
-											</div>
-											{% endfor %}
+												{% endif %}
 										</div>
 										<div class="cart-summary">
 											<small>{{cartcount|length}} Item(s) selected</small>
@@ -164,18 +173,19 @@
 				<div id="responsive-nav">
 					<!-- NAV -->
 					<ul class="main-nav nav navbar-nav">
-						{% if session == None%}
+						{% if request.user.is_authenticated%}
 						<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 						<li><a href="#">Hot Deals</a></li>
 						<li><a href="{% url 'store'%}">Categories</a></li>
-						<li><a href="{% url 'login'%}" >Login</a></li>
-						<li><a href="{% url 'signup'%}">Sign Up</a></li>
+						<li><a href="#">View Your Orders</a></li>
+							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
 						{% else %}
 							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 							<li><a href="#">Hot Deals</a></li>
 							<li><a href="{% url 'store'%}">Categories</a></li>
-							<li><a href="#">View Your orders</a></li>
-							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
+							
+							<li><a href="{% url 'login'%}" >Login</a></li>
+						<li><a href="{% url 'signup'%}">Sign Up</a></li>
 						{%endif%}
 					</ul>
 					<!-- /NAV -->
@@ -262,6 +272,7 @@
 					<div class="col-md-5">
 						<div class="product-details">
 							<h2 class="product-name">{{single_prod.product_name}}</h2>
+							{{single_prod.prod_cart}}
 							<div>
 								<div class="product-rating">
 									<i class="fa fa-star"></i>
@@ -297,13 +308,12 @@
 								<div class="qty-label">
 									Qty
 									<div class="input-number">
-										<input type="number">
+										<input type="number" value={{single_prod.prod_cart.quantity_added}}>
 										<span class="qty-up">+</span>
 										<span class="qty-down">-</span>
 									</div>
 								</div>
-								<form action="{% url 'add-cart' %}" id="form" method="post">
-									<input type="hidden" name="prod_id" value="{{single_prod.id}}">
+								<form action="{% url 'add-cart' product_id=single_prod.id %}" id="form" method="post">
 									{% csrf_token %}
 									<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
 								</form>
@@ -594,10 +604,9 @@
 											</div>
 										</div>
 										<div class="add-to-cart">
-											<form method='post' action='{% url "add-cart" %}' class='myform'>												
-												<input type="hidden" name="prod_id" id="" value='{{ y.id }}' >
+											<form method='post' action='{% url "add-cart"  product_id=y.id %}' class='myform'>												
 												{% csrf_token %}
-												{% if session != None %}
+												{% if request.user != None %}
 												<button class="add-to-cart-btn" id="cart-btn"><i class="fa fa-shopping-cart"></i> add to cart </button>
 												{% else %}
 												<a class="add-to-cart-btn primary-btn" href='{% url "login" %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
@@ -642,8 +651,7 @@
 											</div>
 										</div>
 										<div class="add-to-cart">
-											<form method='post' action='{% url "add-cart" %}' class='myform'>												
-												<input type="hidden" name="prod_id" id="" value='{{ i.id }}' >
+											<form method='post' action='{% url "add-cart" product_id=i.id %}' class='myform'>												
 												{% csrf_token %}
 												{% if session != None %}
 												<button class="add-to-cart-btn" id="cart-btn"><i class="fa fa-shopping-cart"></i> add to cart </button>
@@ -768,9 +776,7 @@
 		<script src="{% static 'ecomtech/js/jquery.zoom.min.js' %}"></script>
 		<script src="{% static 'ecomtech/js/main.js' %}"></script>
 		<script>
-			$(document).ready(function(){
-				var formdeets=$('#form').serialize()
-			})
+			
 		</script>
 	</body>
 </html>

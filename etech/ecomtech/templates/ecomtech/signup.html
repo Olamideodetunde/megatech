@@ -2,18 +2,27 @@
 {% block cart %}{{cartcount|length}}{% endblock cart %}
 {% block total_cart %}{{cartcount|length}}{% endblock total_cart %}
 {% block prod_cart %}
-            {%for i in cartcount%}
-            <div class="product-widget">
-                <div class="product-img">
-                    <img src="{{i.product_name.prod_image.url}}" alt="">
-                </div>
-                <div class="product-body">
-                  <h3 class="product-name"><a href="{% url 'product-page' slug=records.slug %}">{{records.product_name}}</a></h3>
-                    <h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.product_name.product_price}}</h4>
-                </div>
-                <button class="delete"><i class="fa fa-close"></i></button>
-            </div>
-            {% endfor %}
+{% if cartcount %}
+												{%for i in cartcount%}
+												<div class="product-widget">
+													<div class="product-img">
+														<img src="{{i.products.prod_image.url}}" alt="">
+													</div>
+													<div class="product-body">
+														<h3 class="product-name"><a href="#">{{i.products.product_name}}</a></h3>
+														<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.products.product_price}}</h4>
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
+												</div>
+												{% endfor %}
+												{% else %}
+												<div class="product-widget">
+													<div class="product-body">
+															No item in the Cart
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
+												</div>
+												{% endif %}
 {% endblock prod_cart %}
 {% block content %}
   <!-- SECTION -->
@@ -25,51 +34,48 @@
         <div class='col-md-6'>
           <form method='post' class='col-md-12 rounded ' style='box-shadow:1px 1px 3px black;padding:20px;' action=''>
             <h4 class='text-center'>Sign Up</h4>
+            {% csrf_token %}
             {% if messages %}
-            {% for message in messages %}
-                  {% if message.tags %}
-                      <div class="alert alert-danger" role="alert">{{ message }}</div>
-                  {% else %}
-                      <div class="alert alert-success" role="alert">{{ message }}</div>
-                  {% endif %}
-            {% endfor %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
             {% endif %}
             <div class='form-group'>
+              <label for="">{{ form.cust_fname.label}}</label>
                 {{ form.cust_fname}}
                 {% if form.cust_fname.errors %}
                   <small class='text-danger'>{{form.cust_fname.errors}}</small>
                 {% endif %}
             </div>
             <div class='form-group'>
+              <label for="">{{ form.cust_lname.label}}</label>
               {{ form.cust_lname}}
               {% if form.cust_lname.errors %}
                   <small class='text-danger'>{{form.cust_lname.errors}}</small>
                 {% endif %}
             </div>
             <div class='form-group'>
-              {{ form.cust_email}}
-              {% if form.cust_email.errors %}
-                  <small class='text-danger'>{{form.cust_email.errors}}</small>
+              <label for="">{{ form.email.label}}</label>
+              {{ form.email}}
+              {% if form.email.errors %}
+                  <small class='text-danger'>{{form.email.errors}}</small>
                 {% endif %}
             </div>
             <div class='form-group'>
-              {{ form.cust_phone}}
-              {% if form.cust_phone.errors %}
-                  <small class='text-danger'>{{form.cust_phone.errors}}</small>
-                {% endif %}
-            </div>
-            <div class='form-group'>
-              {{ form.cust_password}}
-              {% if form.cust_password.errors %}
-                  <small class='text-danger'>{{form.cust_password.errors}}</small>
+              <label for="">{{ form.password1.label}}</label>
+              {{ form.password1}}
+              {% if form.password1.errors %}
+                  <small class='text-danger'>{{form.password1.errors}}</small>
               {% endif %}
             </div>
             <div class='form-group'>
-              {{ form.confirm_password}}
-              {% if form.cust_password.errors %}
-                  <small class='text-danger'>{{form.cust_password.errors}}</small>
+              <label for="">{{ form.password2.label}}</label>
+              {{ form.password2}}
+              {% if form.password2.errors %}
+                  <small class='text-danger'>{{form.password2.errors}}</small>
               {% endif %}
-              {% csrf_token %}
             </div>
             <button class='btn primary-btn'>Sign Up</button>
           </form>

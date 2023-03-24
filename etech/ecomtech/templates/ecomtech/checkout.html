@@ -23,7 +23,7 @@
 
 		<!-- Font Awesome Icon -->
 		<link rel="stylesheet" href="{% static 'ecomtech/css/font-awesome.min.css'%}">
-
+		<link type="text/css" rel="stylesheet" href="{% static 'ecomtech/sass/_shoping-cart.scss'%}"/>
 		<!-- Custom stlylesheet -->
 		<link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick.css'%}"/>
 		<link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/style.css'%}"/>
@@ -48,7 +48,7 @@
 					</ul>
 					<ul class="header-links pull-right">
 						<li><a href="#"><i class="fa fa-dollar"></i> USD</a></li>
-						<li><a href="#"><i class="fa fa-user-o"></i> My Account</a></li>
+						<li><a href="{% url 'profile' %}"><i class="fa fa-user-o"></i> {{request.user}}</a></li>
 					</ul>
 				</div>
 			</div>
@@ -108,18 +108,27 @@
 									</a>
 									<div class="cart-dropdown">
 										<div class="cart-list">
-											{%for i in cartcount%}
-											<div class="product-widget">
-												<div class="product-img">
-													<img src="{{i.product_name.prod_image.url}}" alt="">
+											{% if cartcount %}
+												{%for i in cartcount%}
+												<div class="product-widget">
+													<div class="product-img">
+														<img src="{{i.products.prod_image.url}}" alt="">
+													</div>
+													<div class="product-body">
+														<h3 class="product-name"><a href="#">{{i.products.product_name}}</a></h3>
+														<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.products.product_price}}</h4>
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
 												</div>
-												<div class="product-body">
-													<h3 class="product-name"><a href="#">{{i.product_name.product_name}}</a></h3>
-													<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.product_name.product_price}}</h4>
+												{% endfor %}
+												{% else %}
+												<div class="product-widget">
+													<div class="product-body">
+															No item in the Cart
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
 												</div>
-												<button class="delete"><i class="fa fa-close"></i></button>
-											</div>
-											{% endfor %}
+												{% endif %}
 										</div>
 										<div class="cart-summary">
 											<small>{{cartcount|length}} Item(s) selected</small>
@@ -161,18 +170,19 @@
 				<div id="responsive-nav">
 					<!-- NAV -->
 					<ul class="main-nav nav navbar-nav">
-						{% if session == None%}
+						{% if request.user.is_authenticated%}
 						<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 						<li><a href="#">Hot Deals</a></li>
 						<li><a href="{% url 'store'%}">Categories</a></li>
-						<li><a href="{% url 'login'%}" >Login</a></li>
-						<li><a href="{% url 'signup'%}">Sign Up</a></li>
+						<li><a href="#">View Your Orders</a></li>
+							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
 						{% else %}
 							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 							<li><a href="#">Hot Deals</a></li>
 							<li><a href="{% url 'store'%}">Categories</a></li>
-							<li><a href="#">View Your Orders</a></li>
-							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
+							
+							<li><a href="{% url 'login'%}" >Login</a></li>
+						<li><a href="{% url 'signup'%}">Sign Up</a></li>
 						{%endif%}
 					</ul>
 					<!-- /NAV -->
