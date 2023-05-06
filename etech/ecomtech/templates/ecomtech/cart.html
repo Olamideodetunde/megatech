@@ -27,107 +27,98 @@
 												{% endif %}
 {% endblock prod_cart %}
 {% block content %}
-<!-- SECTION -->
-<div class="section">
-  <!-- container -->
-  <div class="container">
-    <!-- row -->
-    <div class="row">
-      <section class="shoping-cart spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="shoping__cart__table">
-                        <table class='table-striped table'>
-                            <thead>
-                                <tr>
-                                    <th class="shoping__product">Products</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody class="table-group-divider">
-                                {% for i in cart %}
-                                <tr scope='row'>
-                                    <td class="shoping__cart__item">
-                                        <h5>{{i.products.product_name}}</h5>
-                                    </td>
-                                    <td class="shoping__cart__price">
-                                        ${{i.products.product_price}}
-                                    </td>
-                                    <td class="shoping__cart__quantity">
-                                        <div class="qty-label">
-                                            <div class="input-number">
-                                                <form action="{% url 'quantitytoggle' prod_id=i.products.id %}" method="post">
-                                                    {% csrf_token %}
-                                                    <input type="number" name="quantity" value={{i.quantity_added}}>
-                                                    <button class="qty-up" type="submit">+</button>
-                                                    <button class="qty-down" type="submit">-</button>
-                                                </form>
-                                                
-                                            </div>
+<!-- Shoping Cart Section Begin -->
+<section class="shoping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__table">
+                    <table >
+                        <thead>
+                            <tr>
+                                <th class="shoping__product">Products</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            {% for i in cart %}
+                            <tr scope='row'>
+                                <td class="shoping__cart__item">
+                                    <h5>{{i.products.product_name}}</h5>
+                                </td>
+                                <td class="shoping__cart__price">
+                                    ${{i.products.product_price}}
+                                </td>
+                                <td class="shoping__cart__quantity">
+                                    <div class="qty-label">
+                                        <div class="input-number">
+                                            <form action="{% url 'quantitytoggle' prod_id=i.products.id %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="number" name="quantity" value={{i.quantity_added}}>
+                                                <button class="qty-up" type="submit">+</button>
+                                                <button class="qty-down" type="submit">-</button>
+                                            </form>
+                                            
                                         </div>
-                                    </td>
-                                    <td class="shoping__cart__total">
-                                        ${{ i.total_amt}}
-                                        
-                                    </td>
-                                    <form action='{% url "remove-cart" product_id=i.products.id %}' method="post">
-                                    <td >
-                                        {% csrf_token%}
-                                        <button class="delete"><i class="fa fa-close"></i></button>
-                                    </td>
-                                    </form>
-                                </tr>
-                                
-                                {% endfor %}
-                                
-                                
-                            </tbody>
-                        </table>
+                                    </div>
+                                </td>
+                                <td class="shoping__cart__total">
+                                    ${{ i.total_amt}}
+                                    
+                                </td>
+                                <form action='{% url "remove-cart" product_id=i.products.id %}' method="post">
+                                <td >
+                                    {% csrf_token%}
+                                    <button class="delete-btn"><i class="fa fa-close"></i></button>
+                                </td>
+                                </form>
+                            </tr>
+                            
+                            {% endfor %}
+                            
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__btns">
+                    <a href="{% url 'store' %}" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
+                    <a href="#" class="primary-btn cart-btn cart-btn-right"><span class="icon_loading"></span>
+                        Upadate Cart</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="shoping__continue">
+                    <div class="shoping__discount">
+                        <h5>Discount Codes</h5>
+                        <form action="#">
+                            <input type="text" placeholder="Enter your coupon code">
+                            <button type="submit" class="site-btn">APPLY COUPON</button>
+                        </form>
                     </div>
                 </div>
             </div>
-            <div class="row" style="justify-content: space-between;">
-                <div class="col-md-7">
-                    <div class="container-fluid">
-                        <div class="row d-flex p-4 bg-dark m-2">
-                          <form action="" method="post">
-                            <div class="row form-group">
-                                <h5>Discount Codes</h5>
-                                <div class='col-md-8 mb-3'>
-                                    <input class="input" type="text" name="first-name" placeholder="Apply Codes">
-                                </div>
-                              <div class="col-md-2">
-                                <button type="submit" class=" btn primary-btn">APPLY COUPON</button>
-                              </div>
-                            </div>
-                          </form>
-
-                        </div>
-                      </div>
-            </div>
-            <div class="col-md-4" style=" margin: 1vw;padding: 2vw;background-color: rgba(128,128,128,0.2);">
-                <div >
-                    <h5 class="text-center">Cart Total</h5>
+            <div class="col-lg-6">
+                <div class="shoping__checkout">
+                    <h5>Cart Total</h5>
                     <ul>
-                        <li style="margin-bottom: 0.3vw;">Subtotal <span>$454.98</span></li>
-                        <li style="margin-bottom: 0.3vw;">Total <span>${{sumtotal}}</span></li>
+                        <li>Subtotal <span>${{sumtotal}}</span></li>
+                        <li>Total <span>${{sumtotal}}</li>
                     </ul>
                     <a href="{% url 'checkout-page' %}" class="primary-btn">PROCEED TO CHECKOUT</a>
                 </div>
             </div>
         </div>
-            </div>
-                
-        </div>
-    </section>
     </div>
-    <!-- /row -->
-  </div>
-  <!-- /container -->
-</div>
-<!-- /SECTION -->
+</section>
+<!-- Shoping Cart Section End -->
 {% endblock content %}
+{% block customjs %}
+{% endblock customjs %}
+

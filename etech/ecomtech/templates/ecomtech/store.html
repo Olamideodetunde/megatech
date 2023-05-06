@@ -14,7 +14,6 @@
  
 		 <!-- Bootstrap -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/bootstrap.min.css'%}"/>
-		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/sass/_shoping-cart.scss'%}"/>
 		 <!-- Slick -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick.css'%}"/>
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick-theme.css'%}"/>
@@ -439,15 +438,10 @@
 											</div>
 										</div>
 										<div class="add-to-cart">
-											<form method='post' action='{% url 'add-cart' product_id=records.id %}' class='myform'>												
+											<form method='post' action='{% url "add-cart" product_id=records.id %}' >												
 												{% csrf_token %}
 												{% if request.user != None %}
-												{% if records.prod_cart != '' %}
-												<button class="add-to-cart-btn" id="cart-btn"><i class="fa fa-check" aria-hidden="true"></i>Added {{records.prod_cart}}</button>
-												{% else %}
-												<button class="add-to-cart-btn" id="cart-btn"><i class="fa fa-shopping-cart" aria-hidden="true"></i> add to cart</button>
-												{% endif %}
-												
+												<button class="add-to-cart-btn"><i class="fa fa-shopping-cart" aria-hidden="true"></i> add to cart</button>
 												{% else %}
 												<a class="add-to-cart-btn primary-btn" href='{% url "login" %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
 												{% endif %}

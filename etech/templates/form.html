@@ -14,7 +14,6 @@
  
 		 <!-- Bootstrap -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/bootstrap.min.css'%}"/>
-		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/sass/_shoping-cart.scss'%}"/>
 		 <!-- Slick -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick.css'%}"/>
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick-theme.css'%}"/>
@@ -283,6 +282,6 @@
 		<script src="{% static 'ecomtech/js/nouislider.min.js' %}"></script>
 		<script src="{% static 'ecomtech/js/jquery.zoom.min.js' %}"></script>
 		<script src="{% static 'ecomtech/js/main.js' %}"></script>
-
+		{% block customjs %}{% endblock customjs %}
 	</body>
 </html>
