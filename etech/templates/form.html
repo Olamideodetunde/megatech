@@ -43,9 +43,9 @@
 			<div id="top-header">
 				<div class="container">
 					<ul class="header-links pull-left">
-						<li><a href="#"><i class="fa fa-phone"></i> +021-95-51-84</a></li>
-						<li><a href="#"><i class="fa fa-envelope-o"></i> email@email.com</a></li>
-						<li><a href="#"><i class="fa fa-map-marker"></i> 1734 Stonecoal Road</a></li>
+						<li><a href="#"><i class="fa fa-phone"></i> {{request.user.cust_phone}}</a></li>
+						<li><a href="#"><i class="fa fa-envelope-o"></i> {{request.user}}</a></li>
+						<li><a href="#"><i class="fa fa-map-marker"></i> {{request.user.cust_address}}</a></li>
 					</ul>
 					<ul class="header-links pull-right">
 						<li><a href="#"><i class="fa fa-dollar"></i> USD</a></li>
@@ -113,7 +113,7 @@
 										</div>
 										<div class="cart-summary">
 											<small>{% block total_cart %}{% endblock total_cart %} Item(s) selected</small>
-											<h5>SUBTOTAL: $2940.00</h5>
+											<h5>SUBTOTAL: ${% block sumtotal %}{% endblock  %}</h5>
 										</div>
 										<div class="cart-btns">
 											<a href="{% url 'cart' %}">View Cart</a>
@@ -155,7 +155,7 @@
 						<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 						<li><a href="#">Hot Deals</a></li>
 						<li><a href="{% url 'store'%}">Categories</a></li>
-						<li><a href="#">View Your Orders</a></li>
+						<li><a href="{% url 'order-page'%}">View Your Orders</a></li>
 							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
 						{% else %}
 							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
@@ -190,9 +190,9 @@
 								<h3 class="footer-title">About Us</h3>
 								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
 								<ul class="footer-links">
-									<li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
-									<li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
-									<li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
+									<li><a href="#"><i class="fa fa-map-marker"></i>{{request.user.cust_address}}</a></li>
+									<li><a href="#"><i class="fa fa-phone"></i>{{request.user.cust_phone}}</a></li>
+									<li><a href="#"><i class="fa fa-envelope-o"></i>{{request.user.email}}</a></li>
 								</ul>
 							</div>
 						</div>

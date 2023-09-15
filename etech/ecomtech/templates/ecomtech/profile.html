@@ -2,6 +2,7 @@
 {% block title %}Electro - Profile{% endblock title %}
 {% block cart %}{{cartcount|length}}{% endblock cart %}
 {% block total_cart %}{{cartcount|length}}{% endblock total_cart %}
+{% block sumtotal %}{{sumtotal}}{% endblock  %}
 {% block prod_cart %}
 {% if cartcount %}
 												{%for i in cartcount%}
@@ -43,9 +44,41 @@
                     {% endfor %}
                 </ul>
             {% endif %}
-
-            {{form.as_p}}
-            
+            <div class='form-group'>
+              <label for="">{{ form.cust_fname.label}}</label>
+                {{ form.cust_fname}}
+                {% if form.cust_fname.errors %}
+                  <small class='text-danger'>{{form.cust_fname.errors}}</small>
+                {% endif %}
+            </div>
+            <div class='form-group'>
+              <label for="">{{ form.cust_lname.label}}</label>
+              {{ form.cust_lname}}
+              {% if form.cust_lname.errors %}
+                  <small class='text-danger'>{{form.cust_lname.errors}}</small>
+              {% endif %}
+            </div>
+            <div class='form-group'>
+              <label for="">{{ form.cust_phone.label}}</label>
+              {{ form.cust_phone}}
+              {% if form.cust_phone.errors %}
+                  <small class='text-danger'>{{form.cust_phone.errors}}</small>
+                {% endif %}
+            </div>
+            <div class='form-group'>
+              <label for="">{{ form.cust_image.label}}</label>
+              {{ form.cust_image}}
+              {% if form.cust_image.errors %}
+                  <small class='text-danger'>{{form.cust_image.errors}}</small>
+              {% endif %}
+            </div>
+            <div class='form-group'>
+              <label for="">{{ form.cust_address.label}}</label>
+              {{ form.cust_address}}
+              {% if form.cust_address.errors %}
+                  <small class='text-danger'>{{form.cust_address.errors}}</small>
+              {% endif %}
+            </div>
             <button type="submit" class='btn primary-btn'>Update</button>
           </form>
         </div>

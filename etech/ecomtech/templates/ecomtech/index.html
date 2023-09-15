@@ -42,9 +42,9 @@
 			<div id="top-header">
 				<div class="container">
 					<ul class="header-links pull-left">
-						<li><a href="#"><i class="fa fa-phone"></i> +021-95-51-84</a></li>
+						<li><a href="#"><i class="fa fa-phone"></i> {{request.user.cust_phone}}</a></li>
 						<li><a href="#"><i class="fa fa-envelope-o"></i> {{request.user}}</a></li>
-						<li><a href="#"><i class="fa fa-map-marker"></i> 1734 Stonecoal Road</a></li>
+						<li><a href="#"><i class="fa fa-map-marker"></i> {{request.user.cust_address}}</a></li>
 					</ul>
 					<ul class="header-links pull-right">
 						<li><a href="#"><i class="fa fa-dollar"></i> USD</a></li>
@@ -132,7 +132,7 @@
 										</div>
 										<div class="cart-summary">
 											<small>{{cartcount|length}} Item(s) selected</small>
-											<h5>SUBTOTAL: $2940.00</h5>
+											<h5>SUBTOTAL: ${{sumtotal}}</h5>
 										</div>
 										<div class="cart-btns">
 											<a href="{% url 'cart' %}">View Cart</a>
@@ -174,7 +174,7 @@
 						<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 						<li><a href="#">Hot Deals</a></li>
 						<li><a href="{% url 'store'%}">Categories</a></li>
-						<li><a href="#">View Your Orders</a></li>
+						<li><a href="{% url 'order-page'%}">View Your Orders</a></li>
 							<li><a href="{% url 'logout' %}">Logout <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
 						{% else %}
 							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
@@ -289,7 +289,7 @@
 											</div>
 										</div>
 										<div class="product-body">
-											<p class="product-category">{{records.category}}</p>
+											<p class="product-category">{{records.category.prod_category_name}}</p>
 											<h3 class="product-name"><a href="{% url 'product-page' slug=records.slug %}">{{records.product_name}}</a></h3>
 											<h4 class="product-price">${{records.product_price}}<del class="product-old-price">${{records.product_price}}</del></h4>
 											<div class="product-rating">
@@ -426,7 +426,7 @@
 													</div>
 												</div>
 												<div class="product-body">
-													<p class="product-category">{{records.category}}</p>
+													<p class="product-category">{{records.category.prod_category_name}}</p>
 													<h3 class="product-name"><a href="{% url 'product-page' slug=records.slug %}">{{records.product_name}}</a></h3>
 													<h4 class="product-price">${{records.product_price}}<del class="product-old-price">${{records.product_price}}</del></h4>
 													<div class="product-rating">
@@ -494,7 +494,7 @@
 										<img src="{{ i.prod_image.url }}" alt="">
 									</div>
 									<div class="product-body">
-										<p class="product-category">{{i.category}}</p>
+										<p class="product-category">{{i.category.prod_category_name}}</p>
 										<h3 class="product-name"><a href="#">{{i.product_name}}</a></h3>
 										<h4 class="product-price">${{i.product_price}}<del class="product-old-price">${{i.product_price}}</del></h4>
 									</div>
@@ -511,7 +511,7 @@
 										<img src="{{ y.prod_image.url }}" alt="">
 									</div>
 									<div class="product-body">
-										<p class="product-category">{{ y.category }}</p>
+										<p class="product-category">{{ y.category.prod_category_name }}</p>
 										<h3 class="product-name"><a href="#">{{y.product_name}}</a></h3>
 										<h4 class="product-price">${{y.product_price}}<del class="product-old-price">${{y.product_price}}</del></h4>
 									</div>
@@ -539,7 +539,7 @@
 										<img src="{{ x.prod_image.url }}" alt="">
 									</div>
 									<div class="product-body">
-										<p class="product-category">{{x.category}}</p>
+										<p class="product-category">{{x.category.prod_category_name}}</p>
 										<h3 class="product-name"><a href="{% url 'product-page' slug=x.slug %}">{{x.product_name}}</a></h3>
 										<h4 class="product-price">${{x.product_price}}<del class="product-old-price">${{x.product_price}}</del></h4>
 									</div>
@@ -556,7 +556,7 @@
 										<img src="{{ y.prod_image.url }}" alt="">
 									</div>
 									<div class="product-body">
-										<p class="product-category">{{ y.category }}</p>
+										<p class="product-category">{{ y.category.prod_category_name }}</p>
 										<h3 class="product-name"><a href="{% url 'product-page' slug=y.slug %}">{{y.product_name}}</a></h3>
 										<h4 class="product-price">${{y.product_price}}<del class="product-old-price">${{y.product_price}}</del></h4>
 									</div>
@@ -586,7 +586,7 @@
 										<img src="{{ a.prod_image.url }}" alt="">
 									</div>
 									<div class="product-body">
-										<p class="product-category">{{a.category}}</p>
+										<p class="product-category">{{a.category.prod_category_name}}</p>
 										<h3 class="product-name"><a href="{% url 'product-page' slug=a.slug %}">{{a.product_name}}</a></h3>
 										<h4 class="product-price">${{a.product_price}}<del class="product-old-price">${{a.product_price}}</del></h4>
 									</div>
@@ -603,7 +603,7 @@
 										<img src="{{ b.prod_image.url }}" alt="">
 									</div>
 									<div class="product-body">
-										<p class="product-category">{{ b.category }}</p>
+										<p class="product-category">{{ b.category.prod_category_name }}</p>
 										<h3 class="product-name"><a href="{% url 'product-page' slug=b.slug %}">{{b.product_name}}</a></h3>
 										<h4 class="product-price">${{b.product_price}}<del class="product-old-price">${{b.product_price}}</del></h4>
 									</div>
@@ -672,9 +672,9 @@
 						<h3 class="footer-title">About Us</h3>
 						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
 						<ul class="footer-links">
-							<li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
-							<li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
-							<li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
+							<li><a href="#"><i class="fa fa-map-marker"></i>{{request.user.cust_address}}</a></li>
+							<li><a href="#"><i class="fa fa-phone"></i>{{request.user.cust_phone}}</a></li>
+							<li><a href="#"><i class="fa fa-envelope-o"></i>{{request.user.email}}</a></li>
 						</ul>
 					</div>
 				</div>

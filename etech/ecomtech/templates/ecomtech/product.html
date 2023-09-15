@@ -44,9 +44,9 @@
 			<div id="top-header">
 				<div class="container">
 					<ul class="header-links pull-left">
-						<li><a href="#"><i class="fa fa-phone"></i> +021-95-51-84</a></li>
-						<li><a href="#"><i class="fa fa-envelope-o"></i> email@email.com</a></li>
-						<li><a href="#"><i class="fa fa-map-marker"></i> 1734 Stonecoal Road</a></li>
+						<li><a href="#"><i class="fa fa-phone"></i> {{request.user.cust_phone}}</a></li>
+						<li><a href="#"><i class="fa fa-envelope-o"></i> {{request.user}}</a></li>
+						<li><a href="#"><i class="fa fa-map-marker"></i> {{request.user.cust_address}}</a></li>
 					</ul>
 					<ul class="header-links pull-right">
 						<li><a href="#"><i class="fa fa-dollar"></i> USD</a></li>
@@ -134,7 +134,7 @@
 										</div>
 										<div class="cart-summary">
 											<small>{{cartcount|length}} Item(s) selected</small>
-											<h5>SUBTOTAL: $2940.00</h5>
+											<h5>SUBTOTAL: ${{sumtotal}}</h5>
 										</div>
 										<div class="cart-btns">
 											<a href="{% url 'cart' %}">View Cart</a>
@@ -271,7 +271,6 @@
 					<div class="col-md-5">
 						<div class="product-details">
 							<h2 class="product-name">{{single_prod.product_name}}</h2>
-							{{single_prod.prod_cart}}
 							<div>
 								<div class="product-rating">
 									<i class="fa fa-star"></i>
@@ -305,13 +304,16 @@
 
 							<div class="add-to-cart">
 								<div class="qty-label">
-									Qty
 									<div class="input-number">
-										<input type="number" value={{single_prod.prod_cart.quantity_added}}>
-										<span class="qty-up">+</span>
-										<span class="qty-down">-</span>
+										<form action="{% url 'quantitytoggle' prod_id=single_prod.id %}" method="post">
+													{% csrf_token %}
+													<input type="number" name="quantity" value={{single_prod.cartdeets.quantity_added}}>
+													<button class="qty-up" type="submit">+</button>
+													<button class="qty-down" type="submit">-</button>
+										</form>
+											
 									</div>
-								</div>
+							</div>
 								<form action="{% url 'add-cart' product_id=single_prod.id %}" id="form" method="post">
 									{% csrf_token %}
 									<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
@@ -465,54 +467,51 @@
 										<div class="col-md-6">
 											<div id="reviews">
 												<ul class="reviews">
+													{% for i in review_product %}
 													<li>
 														<div class="review-heading">
-															<h5 class="name">John</h5>
-															<p class="date">27 DEC 2018, 8:0 PM</p>
+															<h5 class="name">{{i.review_by}}</h5>
+															<p class="date">{{i.review_date}}</p>
 															<div class="review-rating">
+																{% if i.review_ratings == 5 %}
+																<i class="fa fa-star"></i>
+																<i class="fa fa-star"></i>
+																<i class="fa fa-star"></i>
+																<i class="fa fa-star"></i>
+																<i class="fa fa-star"></i>
+																{% elif i.review_ratings == 4%}
 																<i class="fa fa-star"></i>
 																<i class="fa fa-star"></i>
 																<i class="fa fa-star"></i>
 																<i class="fa fa-star"></i>
 																<i class="fa fa-star-o empty"></i>
-															</div>
-														</div>
-														<div class="review-body">
-															<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
-														</div>
-													</li>
-													<li>
-														<div class="review-heading">
-															<h5 class="name">John</h5>
-															<p class="date">27 DEC 2018, 8:0 PM</p>
-															<div class="review-rating">
-																<i class="fa fa-star"></i>
+																{% elif i.review_ratings == 3%}
 																<i class="fa fa-star"></i>
 																<i class="fa fa-star"></i>
 																<i class="fa fa-star"></i>
 																<i class="fa fa-star-o empty"></i>
-															</div>
-														</div>
-														<div class="review-body">
-															<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
-														</div>
-													</li>
-													<li>
-														<div class="review-heading">
-															<h5 class="name">John</h5>
-															<p class="date">27 DEC 2018, 8:0 PM</p>
-															<div class="review-rating">
-																<i class="fa fa-star"></i>
-																<i class="fa fa-star"></i>
+																<i class="fa fa-star-o empty"></i>
+																{% elif i.review_ratings == 2%}
 																<i class="fa fa-star"></i>
 																<i class="fa fa-star"></i>
 																<i class="fa fa-star-o empty"></i>
+																<i class="fa fa-star-o empty"></i>
+																<i class="fa fa-star-o empty"></i>
+																{% elif i.review_ratings == 1 %}
+																<i class="fa fa-star"></i>
+																<i class="fa fa-star-o empty"></i>
+																<i class="fa fa-star-o empty"></i>
+																<i class="fa fa-star-o empty"></i>
+																<i class="fa fa-star-o empty"></i>
+																{% endif %}
 															</div>
 														</div>
 														<div class="review-body">
-															<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+															<p>{{i.review_content}}</p>
 														</div>
 													</li>
+													{% endfor %}
+													
 												</ul>
 												<ul class="reviews-pagination">
 													<li class="active">1</li>
@@ -528,10 +527,11 @@
 										<!-- Review Form -->
 										<div class="col-md-3">
 											<div id="review-form">
-												<form class="review-form">
-													<input class="input" type="text" placeholder="Your Name">
-													<input class="input" type="email" placeholder="Your Email">
-													<textarea class="input" placeholder="Your Review"></textarea>
+												<form class="review-form" action="" method="post">
+													{% csrf_token %}
+													{{review.review_by}}
+													{{review.review_email}}
+													{{review.review_content}}
 													<div class="input-rating">
 														<span>Your Rating: </span>
 														<div class="stars">
@@ -586,7 +586,7 @@
 											</div>
 										</div>
 										<div class="product-body">
-											<p class="product-category">{{y.category}}</p>
+											<p class="product-category">{{y.category.prod_category_name}}</p>
 											<h3 class="product-name"><a href="{% url 'product-page' slug=y.slug %}">{{y.product_name}}</a></h3>
 											<h4 class="product-price">${{y.product_price}}<del class="product-old-price">${{y.product_price}}</del></h4>
 											<div class="product-rating">
@@ -633,7 +633,7 @@
 											</div>
 										</div>
 										<div class="product-body">
-											<p class="product-category">{{i.category}}</p>
+											<p class="product-category">{{i.category.prod_category_name}}</p>
 											<h3 class="product-name"><a href="{% url 'product-page' slug=i.slug %}">{{i.product_name}}</a></h3>
 											<h4 class="product-price">${{i.product_price}}<del class="product-old-price">${{i.product_price}}</del></h4>
 											<div class="product-rating">
@@ -684,9 +684,9 @@
 								<h3 class="footer-title">About Us</h3>
 								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
 								<ul class="footer-links">
-									<li><a href="#"><i class="fa fa-map-marker"></i>1734 Stonecoal Road</a></li>
-									<li><a href="#"><i class="fa fa-phone"></i>+021-95-51-84</a></li>
-									<li><a href="#"><i class="fa fa-envelope-o"></i>email@email.com</a></li>
+									<li><a href="#"><i class="fa fa-map-marker"></i>{{request.user.cust_address}}</a></li>
+									<li><a href="#"><i class="fa fa-phone"></i>{{request.user.cust_phone}}</a></li>
+									<li><a href="#"><i class="fa fa-envelope-o"></i>{{request.user.email}}</a></li>
 								</ul>
 							</div>
 						</div>

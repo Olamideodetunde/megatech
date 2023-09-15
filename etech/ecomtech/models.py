@@ -43,41 +43,49 @@ class User(AbstractBaseUser,PermissionsMixin):
   objects=CustomUserManager()
   USERNAME_FIELD='email'
   REQUIRED_FIELDS=[]
+class ProductCategory(models.Model):
+  prod_category_name=models.CharField(max_length=200,null=True)
+  def __str__(self) :
+    return f'{self.prod_category_name}'
+    # LAPTOP='Laptop'
+    # ACCESSORIES='Acessories'
+    # PHONES='Phones'
+    # TABLET='Tablet'
+    # CAMERAS='Camera'
+class ProductManufacturer(models.Model):
+  prod_manufacturer_name=models.CharField(max_length=200,null=True)
+   
+    # APPLE='Apple'
+    # SAMSUNG='Samsung'
+    # AMAZON='Amazon'
+    # SONY='Sony'
+    # DELL='Dell'
+    # HP='HP'
+    # NOKIA='Nokia'
+  def __str__(self) :
+    return f'{self.prod_manufacturer_name}'
 class Product(models.Model):
-  class ProductCategoryChoice(models.TextChoices):
-    LAPTOP='Laptop'
-    ACCESSORIES='Acessories'
-    PHONES='Phones'
-    TABLET='Tablet'
-    CAMERAS='Camera'
-  class ManufacturerNameChoice(models.TextChoices):
-    APPLE='Apple'
-    SAMSUNG='Samsung'
-    AMAZON='Amazon'
-    SONY='Sony'
-    DELL='Dell'
-    HP='HP'
-    NOKIA='Nokia'
   product_name=models.CharField(max_length=100,null=True)
   stock_no=models.IntegerField(null=True)
   prod_image=models.ImageField(max_length=200,upload_to='products/',null=True)
-  manufacturer_name=models.CharField(max_length=50,null=True,choices=ManufacturerNameChoice.choices)
-  category=models.CharField(max_length=50,null=True,choices=ProductCategoryChoice.choices)
+  prod_manufacturer_name=models.ForeignKey(ProductManufacturer,null=True,on_delete=models.SET_NULL,related_name='prod_manufact')
+  category=models.ForeignKey(ProductCategory,null=True,on_delete=models.SET_NULL,related_name='prod_category')
   product_description=models.TextField(null=True)
   product_price=models.FloatField(max_length=11,null=True)
   slug=models.SlugField(unique=True,db_index=True,null=True)
 
   def __str__(self) :
-     return f'{self.product_name} {self.category} {self.manufacturer_name}'
+     return f'{self.product_name} {self.category} {self.prod_manufacturer_name}'
 
 class Newsletter(models.Model):
   email=models.EmailField(max_length=100,null=True)
   date_subscribed=models.DateField(auto_now=True)
 
-class Review():
+class Review(models.Model):
   review_by=models.CharField(max_length=50,null=True)
   review_email=models.EmailField(max_length=50,null=True)
   review_content=models.TextField(null=True)
+  review_ratings=models.IntegerField(null=True)
   review_for=models.ForeignKey(Product,null=True,on_delete=models.SET_NULL,related_name='prod_rev')
   review_date=models.DateField(auto_now=True)
 
@@ -92,7 +100,11 @@ class Wishlist(models.Model):
   wishers_deets=models.ForeignKey(User,null=True,on_delete=models.SET_NULL,related_name='wishdeets')
   product_name=models.ForeignKey(Product,null=True,on_delete=models.SET_NULL,related_name='prod_wish')
   date_added=models.DateField(auto_now=True)
-
+class Checkout(models.Model):
+  cust_id=models.ForeignKey(User,null=True,on_delete=models.SET_NULL,related_name='checkoutdeets')
+  zip_code=models.CharField(max_length=50,null=True)
+  country=models.CharField(max_length=50,null=True)
+  city=models.CharField(max_length=50,null=True)
 class Transaction(models.Model):
     class TransactionStatusChoices(models.TextChoices):
       PENDING='pending'
@@ -105,7 +117,7 @@ class Transaction(models.Model):
     
     trx_customer = models.ForeignKey(User, null=True,on_delete=models.SET_NULL,related_name='cust_trx')
     trx_refno= models.CharField(max_length=200,null=True)
-    trx_totalamt = models.ForeignKey(Product, null=True,on_delete=models.SET_NULL,related_name='prod_trx')
+    trx_totalamt = models.CharField(max_length=50,null=True)
     trx_status = models.CharField(max_length=50,null=True,choices=TransactionStatusChoices.choices)
     trx_method= models.CharField(max_length=50,null=True,choices=TransactionMethodChoices.choices)
     trx_paygate=models.TextField(null=True)
