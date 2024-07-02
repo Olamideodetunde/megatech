@@ -2,6 +2,7 @@
 {% block title %}Electro - Login{% endblock title %}
 {% block cart %}{{cartcount|length}}{% endblock cart %}
 {% block total_cart %}{{cartcount|length}}{% endblock total_cart %}
+{% block wishlist %}{{wishlist|length}}{% endblock wishlist %}
 {% block sumtotal %}{{sumtotal}}{% endblock  %}
 {% block prod_cart %}
 {% if cartcount %}
@@ -34,7 +35,7 @@
       <!-- row -->
       <div class="row" style='justify-content:center;'>
         <div class='col-md-12' >
-          <form method='post' class='col-md-6 rounded ' style='box-shadow:1px 1px 3px black;padding:20px;' action=''>
+          <form method='post' class='col-md-6 rounded ' style='box-shadow:1px 1px 3px black;padding:20px;' action='' id="loginForm">
             <h4 class='text-center'>Login</h4>
             {% csrf_token %}
             {% if messages %}
@@ -47,15 +48,17 @@
 
             <div class="mb-3">
               <label for="" class="form-label" >Email Address</label>
-              <input class="form-control" type="text" name="email" id="">
+            {{form.email}}
+            <small id="email-error"></small>
             </div>
             <div class="mb-3">
               <label for="" class="form-label">Password</label>
-              <input type="password" class="form-control" name="password" >
+              {{form.password}}
+              <small id="pwd-error"></small>
             </div>
             
             
-            <button class='btn primary-btn'>Login</button>
+            <button class='btn primary-btn' id="loginButton">Login</button>
           </form>
         </div>
       </div>
@@ -66,3 +69,43 @@
   <!-- /SECTION -->
 
 {% endblock content %}
+{% block customjs %}
+  <script>
+
+      document.addEventListener("DOMContentLoaded", function() {
+          const form = document.getElementById("loginForm");
+          const emailInput = form.querySelector("input[name='email']");
+          const passwordInput = form.querySelector("input[name='password']");
+          const loginButton = document.getElementById("loginButton");
+          const emailerr=document.getElementById('email-error')
+          const pwderr=document.getElementById('pwd-error')
+
+          form.addEventListener("submit", function(event) {
+              let valid = true;
+              const email = emailInput.value.trim();
+              const password = passwordInput.value.trim();
+  
+              // Basic email validation
+              if (!email || !isValidEmail(email)) {
+                  valid = false;
+                  emailerr.value="invalid email address"
+                  event.preventDefault();
+              }
+  
+              // Password length validation
+              if (!password || password.length < 6) {
+                  valid = false;
+                  pwderr.value="Password must be at least 6 characters."
+                  event.preventDefault();
+              }
+  
+          });
+  
+          function isValidEmail(email) {
+            // Regular expression for basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+      });
+  </script>
+{% endblock customjs %}

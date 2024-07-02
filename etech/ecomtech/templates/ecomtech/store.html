@@ -92,10 +92,10 @@
 							<div class="header-ctn">
 								<!-- Wishlist -->
 								<div>
-									<a href="#">
+									<a href="{% url 'wishlist' %}">
 										<i class="fa fa-heart-o"></i>
-										<span>Your Wishlist</span>
-										<div class="qty">2</div>
+										<span >Your Wishlist</span>
+										<div class="qty">{{wishlist|length}}</div>
 									</a>
 								</div>
 								<!-- /Wishlist -->
@@ -357,8 +357,35 @@
 												<i class="fa fa-star"></i>
 												<i class="fa fa-star"></i>
 											</div>
-											<div class="product-btns">
-												<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
+											<div class="product-btns ">
+												{% if records.prod_wish.id != None  %}
+												<form method='post' action='{% url "remove-wishlist" product_id=records.id %}' >												
+													{% csrf_token %}
+													{% if request.user != None %}
+													<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">remove from wishlist</span></button>
+													{% else %}
+													<a class="add-to-wishlist" href='{% url "login" %}'><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></a>
+													{% endif %}
+												</form>
+												{% else %}
+												<form method='post' action='{% url "add-wishlist" product_id=records.id %}' >												
+													{% csrf_token %}
+													{% if request.user != None %}
+													<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
+													{% else %}
+													<a class="add-to-wishlist" href='{% url "login" %}'><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></a>
+													{% endif %}
+												</form>
+												{% endif %}
+												{% comment %} <form method='post' action='{% url "add-wishlist" product_id=records.id %}' >												
+													{% csrf_token %}
+													{% if request.user != None %}
+													<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
+													{% else %}
+													<a class="add-to-wishlist" href='{% url "login" %}'><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></a>
+													{% endif %}
+												</form> {% endcomment %}
+												
 												<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
 												<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
 											</div>

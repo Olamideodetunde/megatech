@@ -93,10 +93,10 @@
 							<div class="header-ctn">
 								<!-- Wishlist -->
 								<div>
-									<a href="#">
+									<a href="{% url 'wishlist' %}">
 										<i class="fa fa-heart-o"></i>
-										<span>Your Wishlist</span>
-										<div class="qty">2</div>
+										<span >Your Wishlist</span>
+										<div class="qty">{{wishlist|length}}</div>
 									</a>
 								</div>
 								<!-- /Wishlist -->
@@ -204,7 +204,7 @@
 					<div class="col-md-12">
 						<ul class="breadcrumb-tree">
 							<li><a href="#">Home</a></li>
-							<li><a href="#">All Categories</a></li>
+							<li><a href="{% url "store" %}">All Categories</a></li>
 							<li><a href="#">Accessories</a></li>
 							<li><a href="#">Headphones</a></li>
 							<li class="active">{{single_prod.product_name}}</li>

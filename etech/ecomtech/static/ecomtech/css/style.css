@@ -913,29 +913,39 @@ textarea.input {
   background-color: #E4E7ED;
 }
 
-.product .product-body .product-btns>button {
+.product .product-body .product-btns form{
+  display: inline;
+}
+
+.product .product-body .product-btns form > button,
+.product .product-body .product-btns .add-to-wishlist,
+.product .product-body .product-btns .add-to-compare,
+.product .product-body .product-btns .quick-view {
   position: relative;
   width: 40px;
   height: 40px;
   line-height: 40px;
   background: transparent;
   border: none;
-  -webkit-transition: 0.2s all;
   transition: 0.2s all;
 }
 
-.product .product-body .product-btns>button:hover {
+.product .product-body .product-btns form > button:hover,
+.product .product-body .product-btns .add-to-wishlist:hover,
+.product .product-body .product-btns .add-to-compare:hover,
+.product .product-body .product-btns .quick-view:hover {
   background-color: #E4E7ED;
   color: #0D6EFD;
   border-radius: 50%;
 }
 
-.product .product-body .product-btns>button .tooltipp {
+.product .product-body .product-btns form > button .tooltipp,
+.product .product-body .product-btns .add-to-wishlist .tooltipp,
+.product .product-body .product-btns .add-to-compare .tooltipp,
+.product .product-body .product-btns .quick-view .tooltipp {
   position: absolute;
   bottom: 100%;
   left: 50%;
-  -webkit-transform: translate(-50%, -15px);
-  -ms-transform: translate(-50%, -15px);
   transform: translate(-50%, -15px);
   width: 150px;
   padding: 10px;
@@ -947,15 +957,15 @@ textarea.input {
   z-index: 10;
   opacity: 0;
   visibility: hidden;
-  -webkit-transition: 0.2s all;
   transition: 0.2s all;
 }
 
-.product .product-body .product-btns>button:hover .tooltipp {
+.product .product-body .product-btns form > button:hover .tooltipp,
+.product .product-body .product-btns .add-to-wishlist:hover .tooltipp,
+.product .product-body .product-btns .add-to-compare:hover .tooltipp,
+.product .product-body .product-btns .quick-view:hover .tooltipp {
   opacity: 1;
   visibility: visible;
-  -webkit-transform: translate(-50%, -5px);
-  -ms-transform: translate(-50%, -5px);
   transform: translate(-50%, -5px);
 }
 

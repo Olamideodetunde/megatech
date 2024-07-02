@@ -72,6 +72,7 @@ class Product(models.Model):
   category=models.ForeignKey(ProductCategory,null=True,on_delete=models.SET_NULL,related_name='prod_category')
   product_description=models.TextField(null=True)
   product_price=models.FloatField(max_length=11,null=True)
+  added_to_wishlist=models.BooleanField(null=True)
   slug=models.SlugField(unique=True,db_index=True,null=True)
 
   def __str__(self) :
@@ -122,4 +123,3 @@ class Transaction(models.Model):
     trx_method= models.CharField(max_length=50,null=True,choices=TransactionMethodChoices.choices)
     trx_paygate=models.TextField(null=True)
     trx_date=models.DateTimeField(auto_now=True)
-    trx_expiry=models.DateTimeField(null=True)

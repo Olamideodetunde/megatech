@@ -1,6 +1,7 @@
 {% extends 'form.html' %}
 {% block cart %}{{cartcount|length}}{% endblock cart %}
 {% block total_cart %}{{cartcount|length}}{% endblock total_cart %}
+{% block wishlist %}{{wishlist|length}}{% endblock wishlist %}
 {% block sumtotal %}{{sumtotal}}{% endblock  %}
 {% block prod_cart %}
 {% if cartcount %}

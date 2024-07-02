@@ -1,0 +1,94 @@
+{%extends 'blank.html'%}
+{% block pagetit %}Wishlist{% endblock pagetit %}
+{% block title %}Wishlist{% endblock title %}
+{% block active-page %}Wishlist{% endblock active-page %}
+{% block cart %}{{cart|length}}{% endblock cart %}
+{% block wishlist %}{{wishlist|length}}{% endblock wishlist %}
+{% block sumtotal %}{{sumtotal}}{% endblock  %}
+{% block total_cart %}{{cart|length}}{% endblock total_cart %}
+{% block prod_cart %}
+{% if cart %}
+												{%for i in cart%}
+												<div class="product-widget">
+													<div class="product-img">
+														<img src="{{i.products.prod_image.url}}" alt="">
+													</div>
+													<div class="product-body">
+														<h3 class="product-name"><a href="#">{{i.products.product_name}}</a></h3>
+														<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.products.product_price}}</h4>
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
+												</div>
+												{% endfor %}
+												{% else %}
+												<div class="product-widget">
+													<div class="product-body">
+															No item in the Cart
+													</div>
+													
+												</div>
+												{% endif %}
+{% endblock prod_cart %}
+{% block content %}
+<!-- Shoping Cart Section Begin -->
+<section class="shoping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__table">
+                    <table >
+                        <thead>
+                            <tr>
+                                <th class="shoping__product">Products</th>
+                                <th>Price</th>
+                                <th>Operations</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            {% for i in wishlist %}
+                            <tr scope='row'>
+                                <td class="shoping__cart__item">
+                                    <h5>{{i.product_name.product_name}}</h5>
+                                </td>
+                                <td class="shoping__cart__price">
+                                    ${{i.product_name.product_price}}
+                                </td>
+                                <td >
+                                    </div>
+                                        <form action="{% url 'add-cart' product_id=i.product_name.id %}" id="form" method="post">
+                                            {% csrf_token %}
+                                            <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
+                                        </form>
+                                    </div>
+                                </td>
+                                <form action='{% url "remove-wishlist" product_id=i.product_name.id %}' method="post">
+                                <td >
+                                    {% csrf_token%}
+                                    <button class="delete-btn"><i class="fa fa-close"></i></button>
+                                </td>
+                                </form>
+                            </tr>
+                            
+                            {% endfor %}
+                            
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__btns">
+                    <a href="{% url 'store' %}" class="primary-btn ">CONTINUE SHOPPING</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Shoping Cart Section End -->
+{% endblock content %}
+{% block customjs %}
+{% endblock customjs %}
+

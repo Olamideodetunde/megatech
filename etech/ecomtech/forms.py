@@ -51,15 +51,8 @@ class ProfileForm(UserChangeForm):
                     'cust_phone': forms.TextInput(attrs={'class': 'form-control','placeholder':'Enter Your Phone Number'}),
                     'cust_image': forms.FileInput(attrs={'class': 'form-image'}),
                     'cust_address': forms.Textarea(attrs={'class': 'form-control','placeholder':'Enter Your Address'})
+              
                 }
-  # class Meta:
-  #     model=User
-  #     fields=['cust_image','cust_fname','cust_lname','cust_phone','cust_address']
-  #     labels={'cust_image':'Pick Your Image','cust_fname':'Enter Your First Name','cust_lname':'Enter Your Last Name','cust_phone':'Enter Your Phone Number','cust_address':'Enter Your Address'}
-  #     widgets = {
-  #           'cust_lname': forms.TextInput(attrs={'class': 'form-control','placeholder':'Enter Your Last Name'}),
-  #           'cust_fname': forms.TextInput(attrs={'class': 'form-control','placeholder':'Enter Your First Name'}),
-  #           'cust_phone': forms.TextInput(attrs={'class': 'form-control','placeholder':'Enter Your Phone Number'}),
-  #           'cust_image': forms.FileInput(attrs={'class': ' custom-file-input'}),
-  #           'cust_address': forms.Textarea(attrs={'class': 'form-control','placeholder':'Enter Your Address'})
-  #       }
+class LoginForm(forms.Form):
+  email=forms.CharField(widget=forms.EmailInput(attrs={'class':'form-control','placeholder':'Enter Email Address'}))
+  password=forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'Enter Password'}))

@@ -1,7 +1,9 @@
 {%extends 'blank.html'%}
 {% block pagetit %}Order{% endblock pagetit %}
 {% block title %}Order{% endblock title %}
+{% block active-page %}View Order{% endblock active-page %}
 {% block cart %}{{cart|length}}{% endblock cart %}
+{% block wishlist %}{{wishlist|length}}{% endblock wishlist %}
 {% block sumtotal %}{{sumtotal}}{% endblock  %}
 {% block total_cart %}{{cart|length}}{% endblock total_cart %}
 {% block content %}
@@ -13,45 +15,42 @@
                   <table >
                       <thead>
                           <tr>
-                              <th class="shoping__product">Products</th>
-                              <th>Price</th>
-                              <th>Quantity</th>
+                              <th class="shoping__product">Reference number</th>
                               <th>Total</th>
-                              <th></th>
+                              <th>Order Status</th>
+                              <th>Order Date</th>
+                              
+                              <th>Details</th>
+                              <th>Operations</th>
                           </tr>
                       </thead>
                       <tbody >
                           {% for i in orderdeets %}
                           <tr scope='row'>
                               <td class="shoping__cart__item">
-                                  <h5>{{i.products.product_name}}</h5>
+                                  <h5>{{i.trx_refno}}</h5>
                               </td>
                               <td class="shoping__cart__price">
-                                  ${{i.products.product_price}}
+                                ${{ i.trx_totalamt}}
                               </td>
                               <td class="shoping__cart__quantity">
-                                  <div class="qty-label">
-                                      <div class="input-number">
-                                          <form action="{% url 'quantitytoggle' prod_id=i.products.id %}" method="post">
-                                              {% csrf_token %}
-                                              <input type="number" name="quantity" value={{i.quantity_added}}>
-                                              <button class="qty-up" type="submit">+</button>
-                                              <button class="qty-down" type="submit">-</button>
-                                          </form>
-                                          
-                                      </div>
-                                  </div>
+                                {{i.trx_status}}
                               </td>
                               <td class="shoping__cart__total">
-                                  ${{ i.total_amt}}
+                                {{i.trx_date}}
+                                  
                                   
                               </td>
-                              <form action='{% url "remove-cart" product_id=i.products.id %}' method="post">
-                              <td >
-                                  {% csrf_token%}
-                                  <button class="delete-btn"><i class="fa fa-close"></i></button>
+                              <td>
+                                <a href='' class='btn btn-outline-primary '>Order Details</a>
+
                               </td>
-                              </form>
+                              <form action='{% url "remove-order" order_id=i.id %}' method="post">
+                                <td >
+                                    {% csrf_token%}
+                                    <button class="delete-btn"><i class="fa fa-close"></i></button>
+                                </td>
+                                </form>
                           </tr>
                           
                           {% endfor %}

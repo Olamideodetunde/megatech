@@ -9,7 +9,9 @@ from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .models import Product,Transaction,Newsletter,Cart,User,Wishlist,Checkout,Review,ProductManufacturer,ProductCategory
-from .forms import NewsletterForm,SignupForm,ProfileForm,ReviewForm
+from .forms import LoginForm, NewsletterForm,SignupForm,ProfileForm,ReviewForm
+
+logger = logging.getLogger(__name__)
 # Create your views here.
 def index(request):
   form=NewsletterForm()
@@ -18,8 +20,10 @@ def index(request):
   second_widget=Product.objects.all()[:3]
   if request.user:
     cartcount=Cart.objects.filter(cust_id=request.user.id)
+    wishlist=Wishlist.objects.filter(wishers_deets=request.user.id)
   else:
     cartcount=[]
+    wishlist=[]
   if request.method == 'POST':
     m=Newsletter(email=request.POST['newsletter_email'])
     m.save()
@@ -28,19 +32,20 @@ def index(request):
   for i in cartcount:
      x.append(i.total_amt)
   sumtotal=sum(x)
-  return render(request,'ecomtech/index.html',{'form':form,'cartcount':cartcount,'all_products':all_products,'products_widget':products_widget,'second_widget':second_widget,'sumtotal':sumtotal})
+  return render(request,'ecomtech/index.html',{'form':form,'cartcount':cartcount,'wishlist':wishlist,'all_products':all_products,'products_widget':products_widget,'second_widget':second_widget,'sumtotal':sumtotal})
 @login_required(login_url='login')
 def checkout(request):
   cust = get_user_model()
   user= cust.objects.get(id=request.user.id)
   cartcount=Cart.objects.filter(cust_id=request.user.id)
+  wishlist=Wishlist.objects.filter(wishers_deets=request.user.id)
   x=[]
   for i in cartcount:
      x.append(i.total_amt)
   sumtotal=sum(x)
   if request.method=='POST':
     email=request.POST.get('email')
-    user=User.objects.filter(email=email)
+    user=User.objects.get(id=request.user.id)
     if user:
        
        Checkout.objects.create(cust_id=request.user,country=request.POST['country'],zip_code=request.POST['zip-code'],city=request.POST['city'])
@@ -52,10 +57,12 @@ def checkout(request):
     else:
        return redirect('login')
     return redirect(reverse('paystack'))
-  return render(request,'ecomtech/checkout.html',{'cartcount':cartcount,'sumtotal':sumtotal,'cust':user})
+  return render(request,'ecomtech/checkout.html',{'cartcount':cartcount,'sumtotal':sumtotal,'cust':user,'wishlist':wishlist})
 
 def LoginView(request):
+  form=LoginForm(request.POST)
   cartcount=Cart.objects.filter(cust_id=request.user.id)
+  wishlist=Wishlist.objects.filter(wishers_deets=request.user.id)
   if request.user.is_authenticated:
        return redirect(reverse('store'))
   if request.method == 'POST':
@@ -71,12 +78,13 @@ def LoginView(request):
     else:
        messages.error(request,'Email Address or Password does not exist')
        return redirect(reverse('login'))
-  context={'cartcount':cartcount}
+  context={'cartcount':cartcount,'form':form,'wishlist':wishlist}
   return render(request,'ecomtech/login.html',context)
   
   
 def SignupView(request):
     cartcount=Cart.objects.filter(cust_id=request.user.id)
+    wishlist=Wishlist.objects.filter(wishers_deets=request.user.id)
     if request.user.is_authenticated:
        return redirect(reverse('store'))
     form = SignupForm()
@@ -98,7 +106,7 @@ def SignupView(request):
         # logger.error(form.errors)
         messages.error(request,'An error occured during registration')
       
-    return render(request, 'ecomtech/signup.html',{'form':form,'cartcount':cartcount,'sumtotal':total})
+    return render(request, 'ecomtech/signup.html',{'form':form,'cartcount':cartcount,'sumtotal':total ,'wishlist':wishlist})
 @login_required(login_url='login')
 def confirm_purchases(request):
     """The button here takes them to Paystack"""
@@ -116,15 +124,47 @@ def confirm_purchases(request):
     return render(request,'ecomtech/confirm_payment.html',context)
 @login_required(login_url='login')
 def paystack(request):
-    url='https://api.paystack.co/transaction/initialize'
-    userdeets=User.objects.get(id=request.user.id)
-    deets=Transaction.objects.filter(trx_refno=request.session.get('tref')).first()
-    data={'email':userdeets.email,'amount':deets.trx_totalamt*100,'reference':deets.trx_refno}
-    headers={'Content_Type':'application/json','Authorization':'Bearer sk_test_fb58555bf41a08607aca1beff850bae08805faa7'}
+    url = 'https://api.paystack.co/transaction/initialize'
+    userdeets = User.objects.get(id=request.user.id)
+    deets = Transaction.objects.filter(trx_refno=request.session.get('tref')).first()
+        
+    if not deets:
+            logger.error('Transaction details not found for reference number: %s', request.session.get('tref'))
+            return JsonResponse({'error': 'Transaction details not found.'}, status=404)
+    print(f"trx_totalamt before conversion: {deets.trx_totalamt}") 
+    trx_totalamt = float(deets.trx_totalamt)
+    amount = int(trx_totalamt * 100)  
+    data = {
+            'email': userdeets.email,
+            'amount': amount,
+            'reference': deets.trx_refno
+        }
+    headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer sk_test_909045001f82c94e93f8d3833dbc68221da45e52'
+        }
+        
     response = requests.post(url, headers=headers, data=json.dumps(data))
-    rspjson = json.loads(response.text) 
-    return redirect(rspjson['data']['authorization_url'])
-
+    
+    try:
+        # Assuming rspjson is the response JSON from the Paystack API
+        rspjson = response.json()
+        # Log the response to debug
+        print(rspjson)
+        # Check if 'data' exists in the response
+        if 'data' in rspjson and 'authorization_url' in rspjson['data']:
+            return redirect(rspjson['data']['authorization_url'])
+        else:
+            # Handle the case where 'data' or 'authorization_url' is not present
+            return JsonResponse({'error': 'Invalid response from Paystack'}, status=400)
+    except KeyError as e:
+        # Log the exception
+        print(f"KeyError: {e}")
+        return JsonResponse({'error': 'Unexpected response format from Paystack'}, status=500)
+    except Exception as e:
+        # Log any other exceptions
+        print(f"Exception: {e}")
+        return JsonResponse({'error': 'An error occurred'}, status=500)
 @login_required(login_url='login')
 def paystack_response(request):
         refno = request.session.get('tref')
@@ -140,13 +180,14 @@ def paystack_response(request):
             t.trx_status = 'paid'
             t.trx_expiry=datetime.now()+datetime.timedelta(days=30)
             
-            return redirect('payment')  
+            return redirect('order')  
         else:
             t = Transaction.objects.filter(trx_refno=refno).first()
             t.trx_status = 'failed'
             return "Payment Failed" 
 def products(request,slug):
   cartcount=Cart.objects.filter(cust_id=request.user.id).all()
+  wishlist=Wishlist.objects.filter(wishers_deets=request.user.id)
   y= Product.objects.filter(slug=slug).first()
   if request.method== 'GET':
     review=ReviewForm()
@@ -158,7 +199,7 @@ def products(request,slug):
     for i in cartcount:
         x.append(i.total_amt)
     sumtotal=sum(x)
-    return render(request,'ecomtech/product.html',{'cartcount':cartcount,'all_products':all_products,'next_products':next_products,'single_prod':single_prod,'sumtotal':sumtotal,'review':review,'review_product':review_product})
+    return render(request,'ecomtech/product.html',{'cartcount':cartcount,'all_products':all_products,'next_products':next_products,'single_prod':single_prod,'sumtotal':sumtotal,'review':review,'review_product':review_product,'wishlist':wishlist})
   else:
      review_content=request.POST.get('review_content')
      review_email=request.POST.get('review_email')
@@ -169,6 +210,7 @@ def products(request,slug):
      return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 def profile(request):
   cartcount=Cart.objects.filter(cust_id=request.user.id).all()
+  wishlist=Wishlist.objects.filter(wishers_deets=request.user.id)
   if request.method == 'POST':
     form = ProfileForm(request.POST,request.FILES, instance=request.user)
     context={'cartcount':cartcount,'form':form}
@@ -185,7 +227,7 @@ def profile(request):
     for i in cartcount:
         x.append(i.total_amt)
     sumtotal=sum(x)
-    context={'cartcount':cartcount,'form':form,'sumtotal':sumtotal}
+    context={'cartcount':cartcount,'form':form,'sumtotal':sumtotal,'wishlist':wishlist}
     return render(request, 'ecomtech/profile.html', context)
   
   # form=ProfileForm()
@@ -198,11 +240,21 @@ def profile(request):
 @login_required(login_url='login')
 def cart(request):
   cart=Cart.objects.filter(cust_id=request.user.id)
+  wishlist=Wishlist.objects.filter(wishers_deets=request.user.id)
   x=[]
   for i in cart:
      x.append(i.total_amt)
   sumtotal=sum(x)
-  return render(request,'ecomtech/cart.html',{'session':request.session.get('loggedin'),'cart':cart,'sumtotal':sumtotal})
+  return render(request,'ecomtech/cart.html',{'session':request.session.get('loggedin'),'cart':cart,'sumtotal':sumtotal,'wishlist':wishlist})
+@login_required(login_url='login')
+def wishlist(request):
+  cart=Cart.objects.filter(cust_id=request.user.id)
+  wishlist=Wishlist.objects.filter(wishers_deets=request.user.id)
+  x=[]
+  for i in cart:
+     x.append(i.total_amt)
+  sumtotal=sum(x)
+  return render(request,'ecomtech/wishlist.html',{'session':request.session.get('loggedin'),'cart':cart,'sumtotal':sumtotal,'wishlist':wishlist})
 @login_required(login_url='login')
 def review(request):
    review =ReviewForm()
@@ -217,54 +269,12 @@ def add_cart(request,product_id):
         cart.total_amt= float(int(cart.products.product_price) * int(cart.quantity_added))
         cart.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-# def process_payment(request):
-#     # Get the payment details from the user
-#     amount = request.POST.get('amount')
-#     payer_name = request.POST.get('name')
-#     payer_email = request.POST.get('email')
-#     payment_description = request.POST.get('description')
-
-#     # Set the Remita API endpoint
-#     endpoint = 'https://remitademo.net/payment/v1/query/'
-
-#     # Set the request headers
-#     headers = {
-#         'Content-Type': 'application/json',
-#         'Authorization': 'Bearer <your access token>'
-#     }
-
-#     # Set the request data
-#     data = {
-#         'serviceTypeId': '<your service type ID>',
-#         'amount': amount,
-#         'payerName': payer_name,
-#         'payerEmail': payer_email,
-#         'description': payment_description,
-#         'orderId': '<your order ID>',
-#         'hash': '<your hash>'
-#     }
-
-#     # Send the payment request to the Remita API
-#     response = requests.post(endpoint, headers=headers, json=data)
-
-#     # If the payment is successful, generate the invoice
-#     if response.status_code == 200:
-#         # Set the invoice API endpoint
-#         invoice_endpoint = 'https://remita.net/remita-explorer-service/api/payment/orders/' + '<your order ID>' + '/complete'
-
-#         # Send the invoice request to the Remita API
-#         invoice_response = requests.put(invoice_endpoint, headers=headers)
-
-#         # If the invoice is generated successfully, return a success message
-#         if invoice_response.status_code == 200:
-#             return HttpResponse('Payment successful. Invoice generated.')
-
-#     # If the payment or invoice generation fails, return an error message
-#     return HttpResponse('Payment failed. Please try again.')
 @login_required(login_url='login')
 def add_wishlist(request,product_id):
     product = get_object_or_404(Product, id=product_id)
-    wishlist= Cart.objects.create(cust_id=request.user,products=product)
+    wishlist= Wishlist.objects.create(wishers_deets=request.user,product_name=product)
+    product.added_to_wishlist=True
+    product.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 @login_required(login_url='login')
 def quantitytoggle(request,prod_id):
@@ -285,15 +295,21 @@ def remove_cart(request,product_id):
 @login_required(login_url='login')
 def remove_wishlist(request,product_id):
     product= get_object_or_404(Product, id=product_id)
-    wishlist= Wishlist.objects.filter(cust_id=request.user,products=product).first()
+    wishlist= Wishlist.objects.filter(wishers_deets=request.user,product_name=product).first()
     wishlist.delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='login')
+def remove_order(request,order_id):
+    order= Transaction.objects.filter(id=order_id).first()
+    order.delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 def store(request):
     q = request.GET.get('q', '')
     z = request.GET.get('z', '')
     
     cartcount = Cart.objects.filter(cust_id=request.user.id)
-    
+    wishlist=Wishlist.objects.filter(wishers_deets=request.user.id)
     all_products = Product.objects.all()
     products_widget = Product.objects.all()[:3]
     cartlist = list(cartcount.values('total_amt'))
@@ -315,11 +331,13 @@ def store(request):
         'cartlist': cartlist,
         'sumtotal': sumtotal,
         'prod_manufactuer': prod_manufactuer,
-        'prod_category': prod_category
+        'prod_category': prod_category,
+        'wishlist':wishlist
     })
 def order(request):
     cartcount = Cart.objects.filter(cust_id=request.user.id)
     cartlist = list(cartcount.values('total_amt'))
+    wishlist=Wishlist.objects.filter(wishers_deets=request.user.id)
     sumtotal = sum(item['total_amt'] for item in cartlist)
     orderdeets=Transaction.objects.filter(trx_customer=request.user.id)
     return render(request, 'ecomtech/order.html', {
@@ -327,6 +345,7 @@ def order(request):
         'cartlist': cartlist,
         'sumtotal': sumtotal,
         'orderdeets':orderdeets,
+        'wishlist':wishlist
     })
 def logoutUser(request):
   logout(request)
