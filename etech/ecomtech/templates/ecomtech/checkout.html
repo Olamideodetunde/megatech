@@ -23,7 +23,7 @@
 
 		<!-- Font Awesome Icon -->
 		<link rel="stylesheet" href="{% static 'ecomtech/css/font-awesome.min.css'%}">
-		
+
 		<!-- Custom stlylesheet -->
 		<link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick.css'%}"/>
 		<link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/style.css'%}"/>
@@ -180,7 +180,7 @@
 							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 							<li><a href="#">Hot Deals</a></li>
 							<li><a href="{% url 'store'%}">Categories</a></li>
-							
+
 							<li><a href="{% url 'login'%}" >Login</a></li>
 						<li><a href="{% url 'signup'%}">Sign Up</a></li>
 						{%endif%}
@@ -228,30 +228,54 @@
 								<h3 class="title">Billing address</h3>
 							</div>
 							<div class="form-group">
-								<input class="input" type="text" value='{{cust.cust_fname}}' name="first-name" placeholder="First Name">
+								{{ form.checkout_fname}}
+                                {% if form.checkout_fname.errors %}
+                                  <small class='text-danger'>{{form.checkout_fname.errors}}</small>
+                                {% endif %}
 							</div>
 							<div class="form-group">
-								<input class="input" type="text" value='{{cust.cust_lname}}' name="last-name" placeholder="Last Name">
+								{{ form.checkout_lname}}
+                                {% if form.checkout_lname.errors %}
+                                  <small class='text-danger'>{{form.checkout_lname.errors}}</small>
+                                {% endif %}
 							</div>
 							<div class="form-group">
-								<input class="input" type="email" value='{{cust.email}}' name="email" placeholder="Email">
+								{{ form.checkout_email}}
+                                {% if form.checkout_email.errors %}
+                                  <small class='text-danger'>{{form.checkout_email.errors}}</small>
+                                {% endif %}
 							</div>
 							<div class="form-group">
-								<input class="input" type="text" value='{{cust.cust_address}}' name="address" placeholder="Address">
+								{{ form.checkout_address}}
+                                {% if form.checkout_address.errors %}
+                                  <small class='text-danger'>{{form.checkout_address.errors}}</small>
+                                {% endif %}
 							</div>
 							<div class="form-group">
-								<input class="input" type="text" value='' name="city" placeholder="City">
+								{{ form.checkout_city}}
+                                {% if form.checkout_city.errors %}
+                                  <small class='text-danger'>{{form.checkout_city.errors}}</small>
+                                {% endif %}
 							</div>
 							<div class="form-group">
-								<input class="input" type="text" value='' name="country" placeholder="Country">
+								{{ form.checkout_country}}
+                                {% if form.checkout_country.errors %}
+                                  <small class='text-danger'>{{form.checkout_country.errors}}</small>
+                                {% endif %}
 							</div>
 							<div class="form-group">
-								<input class="input" type="text" value='' name="zip-code" placeholder="ZIP Code">
+								{{ form.checkout_zip}}
+                                {% if form.checkout_zip.errors %}
+                                  <small class='text-danger'>{{form.checkout_zip.errors}}</small>
+                                {% endif %}
 							</div>
 							<div class="form-group">
-								<input class="input" type="tel" value='{{cust.cust_phone}}' name="tel" placeholder="Telephone">
+								{{ form.checkout_phone}}
+                                {% if form.checkout_phone.errors %}
+                                  <small class='text-danger'>{{form.checkout_phone.errors}}</small>
+                                {% endif %}
 							</div>
-							
+
 						</div>
 						<!-- /Billing Details -->
 
@@ -348,7 +372,7 @@
 		</div>
 		<!-- /SECTION -->
 
-		
+
 		<!-- FOOTER -->
 		<footer id="footer">
 			<!-- top footer -->
