@@ -2,10 +2,33 @@
 {% block pagetit %}Order{% endblock pagetit %}
 {% block title %}Order{% endblock title %}
 {% block active-page %}View Order{% endblock active-page %}
-{% block cart %}{{cart|length}}{% endblock cart %}
+{% block cart %}{{cartcount|length}}{% endblock cart %}
 {% block wishlist %}{{wishlist|length}}{% endblock wishlist %}
 {% block sumtotal %}{{sumtotal}}{% endblock  %}
-{% block total_cart %}{{cart|length}}{% endblock total_cart %}
+{% block total_cart %}{{cartcount|length}}{% endblock total_cart %}
+{% block prod_cart %}
+{% if cartcount %}
+												{%for i in cartcount%}
+												<div class="product-widget">
+													<div class="product-img">
+														<img src="{{i.products.prod_image.url}}" alt="">
+													</div>
+													<div class="product-body">
+														<h3 class="product-name"><a href="#">{{i.products.product_name}}</a></h3>
+														<h4 class="product-price"><span class="qty">{{i.quantity_added}}x</span>${{i.products.product_price}}</h4>
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
+												</div>
+												{% endfor %}
+												{% else %}
+												<div class="product-widget">
+													<div class="product-body">
+															No item in the Cart
+													</div>
+													<button class="delete"><i class="fa fa-close"></i></button>
+												</div>
+												{% endif %}
+{% endblock prod_cart %}
 {% block content %}
 <section class="shoping-cart spad">
   <div class="container">
@@ -19,7 +42,7 @@
                               <th>Total</th>
                               <th>Order Status</th>
                               <th>Order Date</th>
-                              
+
                               <th>Details</th>
                               <th>Operations</th>
                           </tr>
@@ -38,8 +61,8 @@
                               </td>
                               <td class="shoping__cart__total">
                                 {{i.trx_date}}
-                                  
-                                  
+
+
                               </td>
                               <td>
                                 <a href='' class='btn btn-outline-primary '>Order Details</a>
@@ -52,10 +75,10 @@
                                 </td>
                                 </form>
                           </tr>
-                          
+
                           {% endfor %}
-                          
-                          
+
+
                       </tbody>
                   </table>
               </div>
