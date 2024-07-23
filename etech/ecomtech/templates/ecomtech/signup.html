@@ -36,7 +36,7 @@
         <div class='col-md-6'>
           <form method='post' class='col-md-12 rounded ' style='box-shadow:1px 1px 3px black;padding:20px;' action=''>
             <h4 class='text-center'>Sign Up</h4>
-            {% csrf_token %}       
+            {% csrf_token %}
             {% if messages %}
                 <ul class="messages">
                     {% for message in messages %}
