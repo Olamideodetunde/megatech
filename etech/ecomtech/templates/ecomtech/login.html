@@ -33,9 +33,9 @@
     <!-- container -->
     <div class="container">
       <!-- row -->
-      <div class="row" style='justify-content:center;'>
-        <div class='col-md-12' >
-          <form method='post' class='col-md-6 rounded ' style='box-shadow:1px 1px 3px black;padding:20px;' action='' id="loginForm">
+      <div class="row">
+        <div class='col-md-6' >
+          <form method='post' class='col-md-12 rounded justify-content-center ' style='box-shadow:1px 1px 3px black;padding:20px;' action='' id="loginForm">
             <h4 class='text-center'>Login</h4>
             {% csrf_token %}
             {% if messages %}
@@ -45,20 +45,20 @@
                     {% endfor %}
                 </ul>
             {% endif %}
-
-            <div class="mb-3">
+            <div class='form-group'>
               <label for="" class="form-label" >Email Address</label>
             {{form.email}}
             <small id="email-error"></small>
             </div>
-            <div class="mb-3">
+            <div class='form-group'>
               <label for="" class="form-label">Password</label>
               {{form.password}}
               <small id="pwd-error"></small>
             </div>
-            
-            
-            <button class='btn primary-btn' id="loginButton">Login</button>
+            <div class="form-group">
+                <button class='btn primary-btn' id="loginButton">Login</button>
+            </div>
+            <small><a href="{% url 'password_reset' %}">Forgot Password?</a></small>
           </form>
         </div>
       </div>
@@ -84,23 +84,23 @@
               let valid = true;
               const email = emailInput.value.trim();
               const password = passwordInput.value.trim();
-  
+
               // Basic email validation
               if (!email || !isValidEmail(email)) {
                   valid = false;
                   emailerr.value="invalid email address"
                   event.preventDefault();
               }
-  
+
               // Password length validation
               if (!password || password.length < 6) {
                   valid = false;
                   pwderr.value="Password must be at least 6 characters."
                   event.preventDefault();
               }
-  
+
           });
-  
+
           function isValidEmail(email) {
             // Regular expression for basic email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
