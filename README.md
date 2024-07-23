@@ -1,8 +1,8 @@
-# My Django Project
+# Electro
 
 ## Overview
 
-This project is a web application built with Django, a high-level Python web framework. It provides [describe the main features of your application].
+This project is a e-commerce web application built with Django, a high-level Python web framework. 
 
 ## Requirements
 
