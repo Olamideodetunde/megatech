@@ -8,22 +8,23 @@
 
 		 {% load static%}
 		 <title>Electro - Store</title>
- 
+
 		 <!-- Google font -->
 		 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
- 
+
 		 <!-- Bootstrap -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/bootstrap.min.css'%}"/>
 		 <!-- Slick -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick.css'%}"/>
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick-theme.css'%}"/>
- 
+
 		 <!-- nouislider -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/nouislider.min.css'%}"/>
- 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.js"></script>
+
 		 <!-- Font Awesome Icon -->
 		 <link rel="stylesheet" href="{% static 'ecomtech/css/font-awesome.min.css'%}">
- 
+
 		 <!-- Custom stlylesheet -->
 		 <link type="text/css" rel="stylesheet" href="{% static 'ecomtech/css/slick.css'%}"/>
 
@@ -130,7 +131,7 @@
 													<button class="delete"><i class="fa fa-close"></i></button>
 												</div>
 												{% endif %}
-												
+
 											</div>
 											<div class="cart-summary">
 												<small>{{cartcount|length}} Item(s) selected</small>
@@ -182,7 +183,7 @@
 							<li class="active"><a href="{% url 'home-page' %}">Home</a></li>
 							<li><a href="#">Hot Deals</a></li>
 							<li><a href="{% url 'store'%}">Categories</a></li>
-							
+
 							<li><a href="{% url 'login'%}" >Login</a></li>
 						<li><a href="{% url 'signup'%}">Sign Up</a></li>
 						{%endif%}
@@ -236,15 +237,15 @@
 								</div>
 								{%for i in prod_category%}
 								<div class="input-checkbox">
-									<label for="category-1">
+									<label for="category-{{ i.id }}">
 										<span></span>
 										<a href="{% url 'store'%}?q={{i.prod_category_name}}">{{i.prod_category_name}}</a>
-									<small>(120)</small>
+									<small>({{ i.product_count }})</small>
 									</label>
 								</div>
 								{%endfor%}
-								
-								
+
+
 							</div>
 						</div>
 						<!-- /aside Widget -->
@@ -253,18 +254,23 @@
 						<div class="aside">
 							<h3 class="aside-title">Price</h3>
 							<div class="price-filter">
-								<div id="price-slider"></div>
-								<div class="input-number price-min">
-									<input id="price-min" type="number">
-									<span class="qty-up">+</span>
-									<span class="qty-down">-</span>
-								</div>
-								<span>-</span>
-								<div class="input-number price-max">
-									<input id="price-max" type="number">
-									<span class="qty-up">+</span>
-									<span class="qty-down">-</span>
-								</div>
+							    <form id="price-filter-form" method="get" action="{% url 'store'%} ">
+    								<div id="price-slider"></div>
+    								<div class="input-number price-min">
+    									<input id="price-min" name="min_price" type="number" min="0" max="15000" value="0">
+    									<span class="qty-up">+</span>
+    									<span class="qty-down">-</span>
+    								</div>
+    								<span>-</span>
+    								<div class="input-number price-max">
+    									<input id="price-max" name="max_price" type="number" min="0" max="15000" value="15000">
+    									<span class="qty-up">+</span>
+    									<span class="qty-down">-</span>
+    								</div>
+    								<div class="form-group">
+    								    <button class='primary-btn' type="submit">Filter</button>
+    								</div>
+							    </form>
 							</div>
 						</div>
 						<!-- /aside Widget -->
@@ -278,7 +284,7 @@
 									<label for="category-1">
 										<span></span>
 										<a href="{% url 'store'%}?z={{i.prod_manufacturer_name}}">{{i.prod_manufacturer_name}}</a>
-										<small>(120)</small>
+										<small>({{ i.product_count }})</small>
 									</label>
 								</div>
 								{%endfor%}
@@ -359,7 +365,7 @@
 											</div>
 											<div class="product-btns ">
 												{% if records.prod_wish.id != None  %}
-												<form method='post' action='{% url "remove-wishlist" product_id=records.id %}' >												
+												<form method='post' action='{% url "remove-wishlist" product_id=records.id %}' >
 													{% csrf_token %}
 													{% if request.user != None %}
 													<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">remove from wishlist</span></button>
@@ -368,7 +374,7 @@
 													{% endif %}
 												</form>
 												{% else %}
-												<form method='post' action='{% url "add-wishlist" product_id=records.id %}' >												
+												<form method='post' action='{% url "add-wishlist" product_id=records.id %}' >
 													{% csrf_token %}
 													{% if request.user != None %}
 													<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
@@ -377,7 +383,7 @@
 													{% endif %}
 												</form>
 												{% endif %}
-												{% comment %} <form method='post' action='{% url "add-wishlist" product_id=records.id %}' >												
+												{% comment %} <form method='post' action='{% url "add-wishlist" product_id=records.id %}' >
 													{% csrf_token %}
 													{% if request.user != None %}
 													<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
@@ -385,13 +391,13 @@
 													<a class="add-to-wishlist" href='{% url "login" %}'><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></a>
 													{% endif %}
 												</form> {% endcomment %}
-												
+
 												<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
 												<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
 											</div>
 										</div>
 										<div class="add-to-cart">
-											<form method='post' action='{% url "add-cart" product_id=records.id %}' >												
+											<form method='post' action='{% url "add-cart" product_id=records.id %}' >
 												{% csrf_token %}
 												{% if request.user != None %}
 												<button class="add-to-cart-btn"><i class="fa fa-shopping-cart" aria-hidden="true"></i> add to cart</button>
@@ -399,18 +405,18 @@
 												<a class="add-to-cart-btn primary-btn" href='{% url "login" %}'><i class="fa fa-shopping-cart"></i> add to cart </a>
 												{% endif %}
 											</form>
-											
+
 										</div>
-										
-										
+
+
 									</div>
 								</div>
 								<!-- /product -->
 
-							
-							
+
+
 							{% endfor %}
-							
+
 						</div>
 						<!-- /store products -->
 
@@ -532,6 +538,41 @@
 		<!-- /FOOTER -->
 
 		<!-- jQuery Plugins -->
+		<script>
+        document.addEventListener('DOMContentLoaded', function() {
+                const priceMinInput = document.getElementById('price-min');
+                const priceMaxInput = document.getElementById('price-max');
+                const priceFilterForm = document.getElementById('price-filter-form');
+                const minPriceLimit = 0;
+                const maxPriceLimit = 15000;
+
+                // Optional: Implement +/- buttons functionality
+                document.querySelectorAll('.qty-up').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const input = this.parentElement.querySelector('input');
+                        input.value = Math.min(parseInt(input.value) + 1, maxPriceLimit);
+                        validatePriceInputs();
+                    });
+                });
+
+                document.querySelectorAll('.qty-down').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const input = this.parentElement.querySelector('input');
+                        input.value = Math.max(parseInt(input.value) - 1, minPriceLimit);
+                        validatePriceInputs();
+                    });
+                });
+
+                function validatePriceInputs() {
+                    if (priceMinInput.value < minPriceLimit) {
+                        priceMinInput.value = minPriceLimit;
+                    }
+                    if (priceMaxInput.value > maxPriceLimit) {
+                        priceMaxInput.value = maxPriceLimit;
+                    }
+                }
+        });
+        </script>
 		<script src="{% static 'ecomtech/js/jquery.min.js'%}"></script>
 		<script src="{% static 'ecomtech/js/bootstrap.min.js' %}"></script>
 		<script src="{% static 'ecomtech/js/slick.min.js' %}"></script>
