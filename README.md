@@ -122,5 +122,10 @@ PAYSTACK_SECRET_KEY=your-paystack-secret-key
 PAYSTACK_PUBLIC_KEY=your-paystack-public-key
 ```
 
+For domain hosting  check this youtube channels for guidance 
+```
+https://www.youtube.com/watch?v=Gnwm7fQnt2c
+https://www.youtube.com/watch?v=uCKZr9wddNw&t=115s
+https://www.youtube.com/watch?v=xtnUwvjOThg
 
-
+```
